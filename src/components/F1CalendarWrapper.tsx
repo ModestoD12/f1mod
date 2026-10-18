@@ -175,10 +175,10 @@ export function F1CalendarWrapper({
                   {weekend.race.location && <><span className="text-slate-600">•</span><span>{weekend.race.location}</span></>}
                 </div>
               </div>
-              <div className="flex-1 rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-left backdrop-blur-sm sm:min-w-[190px]">
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-red-200">Data e Hora</p>
-                <p className="mt-1 text-sm font-bold capitalize text-white">{formatWeekend(weekend.race.date, weekend.race.date)}</p>
-                <p className="text-2xl font-black text-white">{weekend.race.time || '—'}</p>
+              <div className="flex flex-1 flex-col justify-between gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-left backdrop-blur-sm sm:min-w-[190px]">
+                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-red-200">Data e Hora</p>
+                <p className="text-lg font-bold capitalize leading-tight text-white">{formatWeekend(weekend.race.date, weekend.race.date)}</p>
+                <p className="text-3xl font-black leading-none text-white">{weekend.race.time || '—'}</p>
               </div>
             </div>
           </div>
