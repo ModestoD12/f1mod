@@ -15,11 +15,9 @@ import { nbaTeams, nbaSchedule2025, nbaStandings } from './data/nbaData';
 import { nflTeams, nflSchedule2025, nflStandings } from './data/nflData';
 
 // Dados dos esportes fixos
-const availableSports = [
-  { id: 'f1', name: 'Fórmula 1', icon: '🏎️', enabled: true },
-  { id: 'nba', name: 'NBA', icon: '🏀', enabled: false },
-  { id: 'nfl', name: 'NFL', icon: '🏈', enabled: false }
-];
+  const availableSports = [
+    { id: 'f1', name: 'Fórmula 1', icon: '🏎️', enabled: true }
+  ];
 
 // Função para gerar jogos baseados nos dados reais da F1
 const generateF1Events = () => {
