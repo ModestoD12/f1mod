@@ -91,22 +91,32 @@ export function CircuitMap({ circuitId, circuitName }: CircuitMapProps) {
   }, [circuitId]);
 
   return (
-    <div className="rounded-2xl border border-slate-600 bg-slate-900 p-5">
-      <p className="text-xs font-bold uppercase tracking-wide text-slate-200">Traçado</p>
-      <h3 className="mt-1 text-lg font-black text-white">{circuitName || 'Circuito'}</h3>
+    <div className="rounded-2xl border border-slate-600 bg-slate-900 p-3 sm:p-4">
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-300">Traçado e setores</p>
+          <h3 className="mt-1 truncate text-base font-black text-white">{circuitName || 'Circuito'}</h3>
+        </div>
+        <span className="shrink-0 rounded-full border border-red-500/40 bg-red-950/50 px-2 py-1 text-[9px] font-black uppercase tracking-wider text-red-200">S1 · S2 · S3</span>
+      </div>
       {path ? (
         <>
-        <svg viewBox="-4 -4 108 108" className="mx-auto mt-3 h-48 w-full max-w-md lg:h-56" role="img" aria-label={circuitName}>
+        <svg viewBox="-4 -4 108 108" className="mx-auto mt-3 h-32 w-full max-w-sm sm:h-36 lg:h-40" role="img" aria-label={circuitName}>
           <path d={path} fill="none" stroke="#7f1d1d" strokeWidth="5" strokeLinejoin="round" strokeLinecap="round" />
           <path d={path} fill="none" stroke="#f8fafc" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round" />
         </svg>
         <div className="mt-2 flex items-center justify-center gap-2 border-t border-slate-700/70 pt-3" aria-label="Setores da pista">
           {['S1', 'S2', 'S3'].map((sector) => (
-            <span key={sector} className="rounded-md border border-red-500/40 bg-red-950/40 px-2.5 py-1 text-[10px] font-black tracking-widest text-red-200">
-              {sector}
-            </span>
+            <span key={sector} className="rounded-md border border-red-500/40 bg-red-950/40 px-2.5 py-1 text-[10px] font-black tracking-widest text-red-200">{sector}</span>
           ))}
           <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">setores</span>
+        </div>
+        <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-sky-800/70 bg-sky-950/60 px-3 py-2.5" aria-label="Previsão do tempo">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-sky-300">Previsão do tempo</p>
+            <p className="mt-0.5 text-xs text-sky-100">Dados meteorológicos em breve</p>
+          </div>
+          <span className="text-xl" aria-hidden="true">—</span>
         </div>
         </>
       ) : (
