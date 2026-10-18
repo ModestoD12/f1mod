@@ -1,0 +1,194 @@
+import React, { useEffect, useMemo } from 'react';
+import { useF1Calendar } from '../hooks/useF1Calendar';
+import { GameSchedule } from './GameSchedule';
+import { CountryFlag } from './CountryFlag';
+import { CalendarEvent } from '../services/f1CalendarService';
+import { Card, CardContent } from './ui/card';
+import { Loader2, AlertCircle, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from './ui/button';
+
+interface F1CalendarWrapperProps {
+  currentDate: Date;
+  onDateSelect: (date: Date) => void;
+}
+
+const sports = [
+  { id: 'f1', name: 'Fórmula 1', icon: '🏎️' },
+];
+
+function toDateKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function fromDateKey(key: string) {
+  const [year, month, day] = key.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function formatWeekend(start: string, end: string) {
+  const first = fromDateKey(start);
+  const last = fromDateKey(end);
+  if (start === end) {
+    return first.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+  }
+  if (first.getMonth() === last.getMonth()) {
+    return `${first.getDate()} a ${last.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}`;
+  }
+  return `${first.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })} – ${last.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}`;
+}
+
+interface Weekend {
+  round: number;
+  events: CalendarEvent[];
+  start: string;
+  end: string;
+  race: CalendarEvent;
+}
+
+export function F1CalendarWrapper({
+  currentDate,
+  onDateSelect,
+}: F1CalendarWrapperProps) {
+  const { events, seasonYear, loading, error, refetch } = useF1Calendar('current');
+
+  const weekends = useMemo<Weekend[]>(() => {
+    const grouped = new Map<number, CalendarEvent[]>();
+    events.forEach((event) => {
+      const round = event.round || 0;
+      grouped.set(round, [...(grouped.get(round) || []), event]);
+    });
+
+    return [...grouped.entries()]
+      .map(([round, list]) => {
+        const dates = list.map((event) => event.date).sort();
+        const race = list.find((event) => event.session === 'Race') || list[0];
+        return { round, events: list, start: dates[0], end: dates[dates.length - 1], race };
+      })
+      .sort((a, b) => a.start.localeCompare(b.start));
+  }, [events]);
+
+  useEffect(() => {
+    if (!weekends.length) return;
+    const key = toDateKey(currentDate);
+    const current = weekends.find((weekend) => key >= weekend.start && key <= weekend.end);
+    if (current) {
+      if (key !== current.race.date) onDateSelect(fromDateKey(current.race.date));
+      return;
+    }
+    const today = toDateKey(new Date());
+    const next = weekends.find((weekend) => weekend.end >= today) || weekends[weekends.length - 1];
+    if (key !== next.race.date) onDateSelect(fromDateKey(next.race.date));
+  }, [weekends, currentDate, onDateSelect]);
+
+  const currentKey = toDateKey(currentDate);
+  const currentIndex = weekends.findIndex((weekend) => currentKey >= weekend.start && currentKey <= weekend.end);
+  const weekend = currentIndex >= 0 ? weekends[currentIndex] : undefined;
+
+  const jumpToWeekend = (direction: 1 | -1) => {
+    if (!weekends.length) return;
+    const nextIndex = currentIndex === -1
+      ? (direction === 1 ? 0 : weekends.length - 1)
+      : currentIndex + direction;
+    if (nextIndex < 0 || nextIndex >= weekends.length) return;
+    onDateSelect(fromDateKey(weekends[nextIndex].race.date));
+  };
+
+  const goToUpcomingWeekend = () => {
+    if (!weekends.length) return;
+    const today = toDateKey(new Date());
+    const next = weekends.find((item) => item.end >= today) || weekends[weekends.length - 1];
+    onDateSelect(fromDateKey(next.race.date));
+  };
+
+  if (loading) {
+    return (
+      <Card className="bg-slate-900 border-slate-700">
+        <CardContent className="pt-6">
+          <div className="flex flex-col items-center justify-center py-16">
+            <Loader2 className="h-10 w-10 animate-spin text-red-500" />
+            <span className="mt-4 text-slate-200">Carregando calendário F1 {seasonYear || 'atual'}...</span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="bg-slate-900 border-slate-700">
+        <CardContent className="pt-6">
+          <div className="flex flex-col items-center justify-center py-12">
+            <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
+            <p className="text-slate-200 mb-4">{error}</p>
+            <Button onClick={refetch} variant="outline">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Tentar novamente
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 bg-slate-800 rounded-lg border border-slate-500">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => jumpToWeekend(-1)}
+            disabled={currentIndex <= 0}
+            className="bg-slate-700 border-slate-400 text-white hover:bg-slate-600 disabled:opacity-40"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+
+          <div className="min-w-0 px-1">
+            <p className="font-semibold text-sm text-white flex items-center gap-2">
+              {weekend?.race.country && (
+                <CountryFlag nationality={weekend.race.country} size="md" />
+              )}
+              <span className="truncate">{weekend?.race.title || 'Calendário'}</span>
+            </p>
+            <p className="text-xs text-slate-200 truncate">
+              {weekend ? `${formatWeekend(weekend.start, weekend.end)} · ${weekend.race.location}` : 'Sem fim de semana'}
+            </p>
+          </div>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => jumpToWeekend(1)}
+            disabled={currentIndex === -1 || currentIndex >= weekends.length - 1}
+            className="bg-slate-700 border-slate-400 text-white hover:bg-slate-600 disabled:opacity-40"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={goToUpcomingWeekend}
+          className="text-xs text-white hover:bg-slate-700"
+        >
+          Próximo fim de semana
+        </Button>
+      </div>
+
+      {weekend && (
+        <GameSchedule
+          games={weekend.events}
+          sports={sports}
+          currentDate={currentDate}
+          showAll
+        />
+      )}
+    </div>
+  );
+}
+
+export default F1CalendarWrapper;
