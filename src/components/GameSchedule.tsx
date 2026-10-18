@@ -11,6 +11,10 @@ import {
   Gauge,
   Bell,
   Calendar,
+  CloudRain,
+  CloudSun,
+  Thermometer,
+  Wind,
 } from "lucide-react";
 import { toast } from "sonner";
 import { LiveMatchCard } from "./LiveMatchCard";
@@ -382,9 +386,22 @@ const getGameStreamingOptions = (game: Game) => {
                               </div>
 
                               {game.weather && (
-                                <div className="flex min-w-0 items-center justify-between gap-3 rounded border border-sky-800/60 bg-sky-950/50 px-3 py-2 text-sky-100 lg:col-start-2 lg:row-start-2">
-                                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-sky-300">Previsão para a corrida</span>
-                                  <span className="font-bold text-sky-100">{game.weather}</span>
+                                <div className="flex min-w-0 items-center justify-between gap-3 rounded-xl border border-sky-700/70 bg-gradient-to-r from-sky-950/90 via-slate-900/90 to-indigo-950/80 px-3 py-3 text-sky-50 shadow-lg shadow-sky-950/20 lg:col-start-2 lg:row-start-2">
+                                  <div className="flex min-w-0 items-center gap-3">
+                                    {/(chuva|chuvoso|trovoada|tempestade|rain|storm)/i.test(game.weather) ? (
+                                      <CloudRain className="h-7 w-7 shrink-0 text-sky-300" aria-hidden="true" />
+                                    ) : (
+                                      <CloudSun className="h-7 w-7 shrink-0 text-amber-300" aria-hidden="true" />
+                                    )}
+                                    <div className="min-w-0">
+                                      <span className="block text-[10px] font-black uppercase tracking-[0.16em] text-sky-300">Previsão do tempo</span>
+                                      <span className="mt-0.5 block truncate text-sm font-semibold text-white">{game.weather}</span>
+                                    </div>
+                                  </div>
+                                  <div className="flex shrink-0 items-center gap-1 text-white" aria-label="Temperatura prevista">
+                                    <Thermometer className="h-4 w-4 text-amber-300" aria-hidden="true" />
+                                    <span className="text-lg font-black">—°C</span>
+                                  </div>
                                 </div>
                               )}
 
