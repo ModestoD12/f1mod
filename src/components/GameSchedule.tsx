@@ -295,12 +295,52 @@ export function GameSchedule({
                             )}
                           </div>
 
-                          <div className="mb-4 flex flex-wrap gap-2">
+                          <div className="mb-4 flex min-w-0 flex-wrap items-stretch gap-2">
                             <div className={`min-w-0 flex-1 rounded-xl border px-3 py-2.5 sm:px-4 ${game.session === 'Race' ? 'border-red-400/50 bg-red-600 text-white' : 'border-slate-600 bg-slate-800 text-white'}`}>
                               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-300">Data e horário</p>
                               <p className="break-words text-sm font-black capitalize text-white sm:text-base">{formatEventDate(game.date)} · {game.time}</p>
                             </div>
+                            <Button
+                              onClick={() => handleReminder(game)}
+                              variant="outline"
+                              size="sm"
+                              className="shrink-0 border-2 border-slate-600 bg-slate-800/80 font-semibold text-slate-200 shadow-md hover:border-slate-500 hover:bg-slate-700/80 hover:shadow-lg"
+                            >
+                              <Bell className="mr-1 h-4 w-4" />
+                              Avisar
+                            </Button>
                           </div>
+
+                          {getGameStreamingOptions(game).length > 0 && (
+                            <div className="mb-4 rounded-xl border border-slate-700/60 bg-slate-800/50 p-3">
+                              <div className="mb-2 flex items-center gap-2">
+                                <span className="text-sm font-bold text-white">Onde assistir</span>
+                              </div>
+                              <div className="flex flex-wrap gap-2">
+                                {getGameStreamingOptions(game).map((option, idx) => (
+                                  <a
+                                    key={idx}
+                                    href={option.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-all hover:scale-105 hover:shadow-xl ${
+                                      option.isPaid
+                                        ? 'bg-orange-500 text-white hover:bg-orange-400 shadow-orange-500/30 shadow-lg'
+                                        : 'bg-green-500 text-white hover:bg-green-400 shadow-green-500/30 shadow-lg'
+                                    }`}
+                                  >
+                                    <ExternalLink className="h-4 w-4" />
+                                    {option.name}
+                                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                                      option.isPaid ? 'bg-orange-700 text-orange-100' : 'bg-green-700 text-green-100'
+                                    }`}>
+                                      {option.isPaid ? 'PAGO' : 'GRÁTIS'}
+                                    </span>
+                                  </a>
+                                ))}
+                              </div>
+                            </div>
+                          )}
 
                           <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
                             <div className="flex items-center">
@@ -403,15 +443,6 @@ export function GameSchedule({
                       </div>
 
                       <div className="flex w-full shrink-0 flex-row gap-2 sm:w-auto sm:flex-col">
-                        <Button
-                          onClick={() => handleReminder(game)}
-                          variant="outline"
-                          size="sm"
-                          className="shadow-md hover:shadow-lg border-2 font-semibold bg-slate-800/50 text-slate-200 border-slate-600 hover:bg-slate-700/50 hover:border-slate-500"
-                        >
-                          <Bell className="h-4 w-4 mr-1" />
-                          Avisar
-                        </Button>
                         <FavoriteButton
                           id={game.id.toString()}
                           name={game.title}
@@ -421,37 +452,6 @@ export function GameSchedule({
                       </div>
                     </div>
 
-                    {/* Links de Streaming */}
-                    {getGameStreamingOptions(game).length > 0 && (
-                      <div className="mt-4 pt-4 border-t border-slate-600/50">
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="text-sm font-bold text-white">📺 Onde assistir</span>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {getGameStreamingOptions(game).map((option, idx) => (
-                            <a
-                              key={idx}
-                              href={option.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all hover:scale-105 hover:shadow-xl ${
-                                option.isPaid
-                                  ? 'bg-orange-500 text-white hover:bg-orange-400 shadow-orange-500/30 shadow-lg'
-                                  : 'bg-green-500 text-white hover:bg-green-400 shadow-green-500/30 shadow-lg'
-                              }`}
-                            >
-                              <ExternalLink className="w-4 h-4" />
-                              {option.name}
-                              <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                                option.isPaid ? 'bg-orange-700 text-orange-100' : 'bg-green-700 text-green-100'
-                              }`}>
-                                {option.isPaid ? 'PAGO' : 'GRÁTIS'}
-                              </span>
-                            </a>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </CardContent>
                 </Card>
               </motion.div>
