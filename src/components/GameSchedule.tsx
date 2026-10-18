@@ -120,10 +120,8 @@ export function GameSchedule({
   };
 
   // Função para obter opções de streaming de um jogo
-  const getGameStreamingOptions = (game: Game) => {
-    return getStreamingOptions(game.sport, game.session).filter(
-      (option) => option.name.toLowerCase() !== 'globo',
-    );
+const getGameStreamingOptions = (game: Game) => {
+  return getStreamingOptions(game.sport, game.session);
   };
 
   const handleReminder = (game: Game) => {
