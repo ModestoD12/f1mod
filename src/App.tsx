@@ -354,18 +354,8 @@ export default function App() {
 
       <div className="container mx-auto px-3 py-4 sm:px-6 sm:py-6">
         <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-5 md:gap-6">
-          {/* Sidebar esquerda compacta - Desktop */}
-          <div className="hidden md:block">
-            {/* Destaques e notícias */}
-            <SportHighlights />
-          </div>
-
           {/* Conteúdo principal */}
-          <div className="md:col-span-4">
-            {/* Sidebar mobile - aparece no topo em telas menores */}
-            <div className="md:hidden mb-6">
-              <SportHighlights />
-            </div>
+          <div className="md:col-span-5">
             <Card className="bg-slate-900 border-slate-700">
               <CardContent className="p-0 bg-gradient-to-br from-slate-900 to-slate-850">
                 {/* Abas dos esportes */}
@@ -487,6 +477,11 @@ export default function App() {
               </CardContent>
             </Card>
           </div>
+        </div>
+
+        {/* Destaques e notícias no rodapé */}
+        <div className="mt-6 border-t border-slate-800 pt-6">
+          <SportHighlights />
         </div>
       </div>
     </div>
