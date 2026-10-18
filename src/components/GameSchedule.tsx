@@ -303,7 +303,7 @@ const getGameStreamingOptions = (game: Game) => {
                               onClick={() => handleReminder(game)}
                               variant="outline"
                               size="sm"
-                              className="shrink-0 border-2 border-slate-600 bg-slate-800/80 font-semibold text-slate-200 shadow-md hover:border-slate-500 hover:bg-slate-700/80 hover:shadow-lg"
+                              className="h-auto min-h-full shrink-0 self-stretch border-2 border-slate-600 bg-slate-800/80 px-4 font-semibold text-slate-200 shadow-md hover:border-slate-500 hover:bg-slate-700/80 hover:shadow-lg"
                             >
                               <Bell className="mr-1 h-4 w-4" />
                               Avisar
