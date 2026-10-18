@@ -326,7 +326,7 @@ export function GameSchedule({
 
                           {/* Dados específicos da F1 */}
                           {game.sport === "f1" && (
-                            <div className="mt-3 space-y-2 rounded-xl border-2 border-red-800/50 bg-gradient-to-br from-red-950/40 via-orange-950/40 to-red-950/40 p-3 text-xs shadow-inner backdrop-blur-sm sm:p-4">
+                            <div className="mt-3 grid min-w-0 grid-cols-1 gap-3 rounded-xl border-2 border-red-800/50 bg-gradient-to-br from-red-950/40 via-orange-950/40 to-red-950/40 p-3 text-xs shadow-inner backdrop-blur-sm sm:p-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.82fr)] lg:items-start">
                               {game.description && (
                                 <p className="text-sm font-medium text-red-300">
                                   {game.description}
@@ -349,7 +349,7 @@ export function GameSchedule({
                               </div>
 
                               {game.weather && (
-                                <div className="flex items-center justify-between gap-3 rounded border border-sky-800/60 bg-sky-950/50 px-3 py-2 text-sky-100">
+                                <div className="flex min-w-0 items-center justify-between gap-3 rounded border border-sky-800/60 bg-sky-950/50 px-3 py-2 text-sky-100 lg:col-start-2 lg:row-start-2">
                                   <span className="text-[10px] font-black uppercase tracking-[0.16em] text-sky-300">Previsão para a corrida</span>
                                   <span className="font-bold">{game.weather}</span>
                                 </div>
@@ -371,7 +371,7 @@ export function GameSchedule({
                                 </div>
                               )}
                               {game.session === "Race" && game.circuitId && (
-                                <div className="mt-4">
+                                <div className="mt-1 min-w-0 lg:col-start-2 lg:row-start-1 lg:row-span-1 lg:mt-0">
                                   <CircuitMap circuitId={game.circuitId} circuitName={game.circuit} />
                                 </div>
                               )}

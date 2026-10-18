@@ -95,10 +95,20 @@ export function CircuitMap({ circuitId, circuitName }: CircuitMapProps) {
       <p className="text-xs font-bold uppercase tracking-wide text-slate-200">Traçado</p>
       <h3 className="mt-1 text-lg font-black text-white">{circuitName || 'Circuito'}</h3>
       {path ? (
-        <svg viewBox="-4 -4 108 108" className="mx-auto mt-4 h-64 w-full max-w-md" role="img" aria-label={circuitName}>
+        <>
+        <svg viewBox="-4 -4 108 108" className="mx-auto mt-3 h-48 w-full max-w-md lg:h-56" role="img" aria-label={circuitName}>
           <path d={path} fill="none" stroke="#7f1d1d" strokeWidth="5" strokeLinejoin="round" strokeLinecap="round" />
           <path d={path} fill="none" stroke="#f8fafc" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round" />
         </svg>
+        <div className="mt-2 flex items-center justify-center gap-2 border-t border-slate-700/70 pt-3" aria-label="Setores da pista">
+          {['S1', 'S2', 'S3'].map((sector) => (
+            <span key={sector} className="rounded-md border border-red-500/40 bg-red-950/40 px-2.5 py-1 text-[10px] font-black tracking-widest text-red-200">
+              {sector}
+            </span>
+          ))}
+          <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">setores</span>
+        </div>
+        </>
       ) : (
         <p className="mt-6 text-sm text-white">
           {missing ? 'Traçado ainda não disponível para este circuito.' : 'Carregando traçado...'}
