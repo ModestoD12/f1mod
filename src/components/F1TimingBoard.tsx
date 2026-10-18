@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Driver, LapData, Position, RaceControlMessage, Session, Stint, Weather } from '../services/openF1Service';
+import { retiredDrivers } from './RaceInsights';
 
 interface F1TimingBoardProps {
   session: Session | null;
@@ -76,6 +77,7 @@ export function F1TimingBoard({
       if (lap.duration_sector_3 > 0) sessionBest.s3 = Math.min(sessionBest.s3, lap.duration_sector_3);
     });
 
+    const retired = retiredDrivers(raceControl);
     const penalties = new Map<number, number>();
     raceControl.forEach((message) => {
       if (!message.driver_number) return;
@@ -116,6 +118,7 @@ export function F1TimingBoard({
         stintLaps,
         pits: Math.max(0, driverStints.length - 1),
         penalties: penalties.get(driver.driver_number) || 0,
+        retired: retired.has(driver.driver_number),
         lapNumber: last?.lap_number || 0,
       };
     }).filter((row) => row.best || row.last);
@@ -203,7 +206,10 @@ export function F1TimingBoard({
                     <div className="flex items-center gap-2">
                       <span className="h-8 w-1.5 rounded-full" style={{ backgroundColor: `#${row.driver.team_colour}` }} />
                       <div>
-                        <p className="font-black tracking-wide">{row.driver.broadcast_name || row.driver.last_name}</p>
+                        <p className="font-black tracking-wide">
+                          {row.driver.broadcast_name || row.driver.last_name}
+                          {row.retired && <span className="ml-2 text-xs font-black text-red-300">OUT</span>}
+                        </p>
                         <p className="text-xs text-slate-200">{row.driver.team_name}</p>
                       </div>
                     </div>

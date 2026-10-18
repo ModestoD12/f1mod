@@ -28,10 +28,14 @@ export function useF1Telemetry(driverNumber?: number, pollMs = 15000) {
   const driversRef = useRef<Driver[]>([]);
   const anchorRef = useRef<string | undefined>(undefined);
   const anchorReadyRef = useRef(false);
+  const controlReadyRef = useRef(false);
 
   const fetchTelemetry = useCallback(async (initial = false) => {
     try {
-      if (initial) setLoading(true);
+      if (initial) {
+        setLoading(true);
+        controlReadyRef.current = false;
+      }
 
       let latestSession = sessionRef.current;
       if (initial || !latestSession) {
@@ -52,20 +56,18 @@ export function useF1Telemetry(driverNumber?: number, pollMs = 15000) {
       let uniqueDrivers = driversRef.current;
 
       if (!anchorReadyRef.current) {
-        const [lapBundle, driverList, stintList, control] = await Promise.all([
+        const [lapBundle, driverList, stintList] = await Promise.all([
           openF1Api.getSessionLaps(latestSession),
           uniqueDrivers.length
             ? Promise.resolve(uniqueDrivers)
             : openF1Api.getDrivers({ session_key: sessionKey }),
           openF1Api.getStints(sessionKey),
-          openF1Api.getRaceControl({ session_key: sessionKey }).catch(() => [] as RaceControlMessage[]),
         ]);
 
         anchorRef.current = lapBundle.anchor;
         anchorReadyRef.current = true;
         setLaps(lapBundle.laps);
         setStints(stintList);
-        setRaceControl(control);
         const standings = await openF1Api.getLatestPositions(sessionKey, lapBundle.anchor).catch(() => []);
         setPositions(standings);
 
@@ -77,6 +79,22 @@ export function useF1Telemetry(driverNumber?: number, pollMs = 15000) {
           driversRef.current = uniqueDrivers;
           setDrivers(uniqueDrivers);
         }
+      }
+      if (!controlReadyRef.current) {
+        controlReadyRef.current = true;
+        const key = sessionKey;
+        void (async () => {
+          for (let attempt = 0; attempt < 4; attempt += 1) {
+            try {
+              const control = await openF1Api.getRaceControl({ session_key: key });
+              setRaceControl(control);
+              return;
+            } catch {
+              await new Promise((resolve) => setTimeout(resolve, 8000));
+            }
+          }
+          controlReadyRef.current = false;
+        })();
       }
       const relativeTo = anchorRef.current;
 

@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useF1Telemetry } from '../hooks/useF1Telemetry';
 import { F1TimingBoard } from './F1TimingBoard';
+import { RaceInsights } from './RaceInsights';
 import { Driver, LocationPoint, Weather } from '../services/openF1Service';
 
 function LoadingSpinner({ text = 'Carregando...' }: { text?: string }) {
@@ -83,11 +84,13 @@ function TrackMap({
   locations,
   drivers,
   selectedDriver,
+  showNames,
   onSelectDriver,
 }: {
   locations: LocationPoint[];
   drivers: Driver[];
   selectedDriver?: number;
+  showNames: boolean;
   onSelectDriver: (n: number) => void;
 }) {
   const mapped = useMemo(() => {
@@ -147,21 +150,21 @@ function TrackMap({
               stroke="#ffffff"
               strokeWidth={selected ? 3 : 1.5}
             />
-            {selected && (
+            {(selected || showNames) && (
               <>
                 <rect
-                  x={point.cx + 16}
-                  y={point.cy - 12}
-                  width={point.acronym.length * 10 + 16}
-                  height={22}
-                  rx={6}
+                  x={point.cx + 14}
+                  y={point.cy - 11}
+                  width={point.acronym.length * 8 + 12}
+                  height={18}
+                  rx={4}
                   fill="#020617"
-                  stroke="#ffffff"
+                  stroke={point.colour}
                 />
                 <text
-                  x={point.cx + 24}
-                  y={point.cy + 4}
-                  fontSize="13"
+                  x={point.cx + 20}
+                  y={point.cy + 2}
+                  fontSize="11"
                   fill="#ffffff"
                   fontWeight={700}
                 >
@@ -233,6 +236,7 @@ function WeatherPanel({ weather }: { weather: Weather | null }) {
 
 export function OpenF1Dashboard() {
   const [selectedDriver, setSelectedDriver] = useState<number | undefined>(undefined);
+  const [showNames, setShowNames] = useState(false);
   const { session, drivers, weather, locations, laps, stints, raceControl, positions, carData, loading, error, refetch } =
     useF1Telemetry(selectedDriver);
 
@@ -318,6 +322,17 @@ export function OpenF1Dashboard() {
         />
       )}
 
+      {!loading && (
+        <RaceInsights
+          drivers={drivers}
+          stints={stints}
+          laps={laps}
+          raceControl={raceControl}
+          positions={positions}
+          selectedDriver={activeDriver?.driver_number}
+        />
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {teams.map(([team, members]) => (
           <div key={team} className="rounded-xl border border-slate-700/80 bg-slate-950/70 px-3 py-2.5">
@@ -358,9 +373,21 @@ export function OpenF1Dashboard() {
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
         <Card className="min-w-0 bg-slate-900 border-slate-400 text-white">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg text-white flex items-center gap-2">
-              <MapPin className="h-5 w-5 text-red-400" />
-              Telemetria da pista
+            <CardTitle className="text-lg text-white flex items-center justify-between gap-2">
+              <span className="flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-red-400" />
+                Telemetria da pista
+              </span>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                aria-pressed={showNames}
+                onClick={() => setShowNames((current) => !current)}
+                className="border-slate-400 bg-slate-800 text-white hover:bg-slate-700"
+              >
+                {showNames ? 'Ocultar nomes' : 'Mostrar nomes'}
+              </Button>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -368,6 +395,7 @@ export function OpenF1Dashboard() {
               locations={locations}
               drivers={drivers}
               selectedDriver={activeDriver?.driver_number}
+              showNames={showNames}
               onSelectDriver={setSelectedDriver}
             />
             <WeatherPanel weather={weather} />
