@@ -318,32 +318,33 @@ export function OpenF1Dashboard() {
         />
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {teams.map(([team, members]) => (
-          <div key={team} className="rounded-2xl border border-slate-400 bg-slate-950 p-3">
-            <div className="flex items-center gap-2 mb-3">
+          <div key={team} className="rounded-xl border border-slate-700/80 bg-slate-950/70 px-3 py-2.5">
+            <div className="mb-2 flex items-center gap-2">
               <span
-                className="h-3.5 w-3.5 rounded-full border border-white"
+                className="size-2.5 rounded-full"
                 style={{ backgroundColor: `#${members[0]?.team_colour || '64748b'}` }}
               />
-              <p className="text-sm font-bold uppercase tracking-wide text-white">{team}</p>
+              <p className="truncate text-xs font-bold uppercase tracking-wide text-slate-200">{team}</p>
             </div>
-            <div className="flex flex-wrap gap-3">
+            <div className="grid grid-cols-2 gap-2">
               {members.map((driver) => {
                 const selected = activeDriver?.driver_number === driver.driver_number;
                 return (
                   <button
                     key={driver.driver_number}
                     onClick={() => setSelectedDriver(driver.driver_number)}
-                    className="min-w-[8.5rem] flex-1 rounded-2xl border-2 px-4 py-3 text-left transition-transform hover:scale-[1.03]"
+                    aria-pressed={selected}
+                    className="flex min-w-0 items-center justify-between rounded-lg border px-3 py-2 text-left transition-colors hover:bg-slate-700/80"
                     style={{
-                      backgroundColor: selected ? '#ffffff' : '#1e293b',
+                      backgroundColor: selected ? '#f8fafc' : '#1e293b',
                       borderColor: `#${driver.team_colour || '94a3b8'}`,
                       color: selected ? '#020617' : '#ffffff',
                     }}
                   >
-                    <span className="block text-2xl font-black leading-none">{driver.name_acronym}</span>
-                    <span className="mt-1 block text-sm font-semibold" style={{ color: selected ? '#334155' : '#e2e8f0' }}>
+                    <span className="text-base font-black leading-none">{driver.name_acronym}</span>
+                    <span className="text-xs font-semibold" style={{ color: selected ? '#334155' : '#cbd5e1' }}>
                       #{driver.driver_number}
                     </span>
                   </button>
