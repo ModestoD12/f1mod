@@ -397,7 +397,7 @@ const getGameStreamingOptions = (game: Game) => {
                               )}
                               {game.session === "Race" && game.circuitId && (
                                 <div className="mt-1 min-w-0 lg:col-start-2 lg:row-start-1 lg:row-span-1 lg:mt-0">
-                                  <CircuitMap circuitId={game.circuitId} circuitName={game.circuit} />
+                                  <CircuitMap circuitId={game.circuitId} circuitName={game.circuit} weather={game.weather} />
                                 </div>
                               )}
                             </div>
