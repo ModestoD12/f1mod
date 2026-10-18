@@ -351,7 +351,7 @@ export function GameSchedule({
                               {game.weather && (
                                 <div className="flex min-w-0 items-center justify-between gap-3 rounded border border-sky-800/60 bg-sky-950/50 px-3 py-2 text-sky-100 lg:col-start-2 lg:row-start-2">
                                   <span className="text-[10px] font-black uppercase tracking-[0.16em] text-sky-300">Previsão para a corrida</span>
-                                  <span className="font-bold">{game.weather}</span>
+                                  <span className="font-bold text-sky-100">{game.weather}</span>
                                 </div>
                               )}
 

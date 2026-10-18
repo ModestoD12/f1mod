@@ -101,7 +101,7 @@ export function CircuitMap({ circuitId, circuitName }: CircuitMapProps) {
       </div>
       {path ? (
         <>
-        <svg viewBox="-4 -4 108 108" className="mx-auto mt-3 h-32 w-full max-w-sm sm:h-36 lg:h-40" role="img" aria-label={circuitName}>
+        <svg viewBox="-4 -4 108 108" className="mx-auto mt-3 h-24 w-full max-w-xs sm:h-28 lg:h-32" role="img" aria-label={circuitName}>
           <path d={path} fill="none" stroke="#7f1d1d" strokeWidth="5" strokeLinejoin="round" strokeLinecap="round" />
           <path d={path} fill="none" stroke="#f8fafc" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round" />
         </svg>
