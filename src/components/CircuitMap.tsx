@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { CloudSun, Droplets, Thermometer, Wind } from 'lucide-react';
 
 const CIRCUITS: Record<string, { key: number; year: number }> = {
   albert_park: { key: 10, year: 2022 },
@@ -48,9 +49,10 @@ function outline(xs: number[], ys: number[]) {
 interface CircuitMapProps {
   circuitId?: string;
   circuitName?: string;
+  weather?: string;
 }
 
-export function CircuitMap({ circuitId, circuitName }: CircuitMapProps) {
+export function CircuitMap({ circuitId, circuitName, weather }: CircuitMapProps) {
   const [path, setPath] = useState<string | null>(circuitId ? pathCache.get(circuitId) || null : null);
   const [missing, setMissing] = useState(false);
 
@@ -91,14 +93,41 @@ export function CircuitMap({ circuitId, circuitName }: CircuitMapProps) {
   }, [circuitId]);
 
   return (
-    <div className="rounded-2xl border border-slate-600 bg-slate-900 p-5">
-      <p className="text-xs font-bold uppercase tracking-wide text-slate-200">Traçado</p>
-      <h3 className="mt-1 text-lg font-black text-white">{circuitName || 'Circuito'}</h3>
+    <div className="rounded-2xl border border-slate-600 bg-slate-900 p-3 sm:p-4">
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-300">Traçado e setores</p>
+          <h3 className="mt-1 truncate text-base font-black text-white">{circuitName || 'Circuito'}</h3>
+        </div>
+        <span className="shrink-0 rounded-full border border-red-500/40 bg-red-950/50 px-2 py-1 text-[9px] font-black uppercase tracking-wider text-red-200">S1 · S2 · S3</span>
+      </div>
       {path ? (
-        <svg viewBox="-4 -4 108 108" className="mx-auto mt-4 h-64 w-full max-w-md" role="img" aria-label={circuitName}>
+        <>
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-sky-400/25 bg-slate-950/70 px-3 py-2.5 text-white shadow-inner">
+          <div className="flex items-center gap-2">
+            <CloudSun className="size-5 text-amber-300" aria-hidden="true" />
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.16em] text-sky-200">Previsão do tempo</p>
+              <p className="text-sm font-bold text-white">{weather || 'Condições variáveis'}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 text-[10px] font-semibold text-slate-300">
+            <span className="inline-flex items-center gap-1"><Thermometer className="size-3.5 text-orange-300" aria-hidden="true" /> —°C</span>
+            <span className="inline-flex items-center gap-1"><Droplets className="size-3.5 text-sky-300" aria-hidden="true" /> —%</span>
+            <span className="hidden items-center gap-1 sm:inline-flex"><Wind className="size-3.5 text-slate-300" aria-hidden="true" /> — km/h</span>
+          </div>
+        </div>
+        <svg viewBox="-4 -4 108 108" className="mx-auto mt-3 h-24 w-full max-w-xs sm:h-28 lg:h-32" role="img" aria-label={circuitName}>
           <path d={path} fill="none" stroke="#7f1d1d" strokeWidth="5" strokeLinejoin="round" strokeLinecap="round" />
           <path d={path} fill="none" stroke="#f8fafc" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round" />
         </svg>
+        <div className="mt-2 flex items-center justify-center gap-2 border-t border-slate-700/70 pt-3" aria-label="Setores da pista">
+          {['S1', 'S2', 'S3'].map((sector) => (
+            <span key={sector} className="rounded-md border border-red-500/40 bg-red-950/40 px-2.5 py-1 text-[10px] font-black tracking-widest text-red-200">{sector}</span>
+          ))}
+          <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">setores</span>
+        </div>
+        </>
       ) : (
         <p className="mt-6 text-sm text-white">
           {missing ? 'Traçado ainda não disponível para este circuito.' : 'Carregando traçado...'}

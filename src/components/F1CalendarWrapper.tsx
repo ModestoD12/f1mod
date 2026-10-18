@@ -96,13 +96,6 @@ export function F1CalendarWrapper({
     onDateSelect(fromDateKey(weekends[nextIndex].race.date));
   };
 
-  const goToUpcomingWeekend = () => {
-    if (!weekends.length) return;
-    const today = toDateKey(new Date());
-    const next = weekends.find((item) => item.end >= today) || weekends[weekends.length - 1];
-    onDateSelect(fromDateKey(next.race.date));
-  };
-
   if (loading) {
     return (
       <Card className="bg-slate-900 border-slate-700">
@@ -134,58 +127,63 @@ export function F1CalendarWrapper({
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 bg-slate-800 rounded-lg border border-slate-500">
-        <div className="flex items-center gap-2 flex-1 min-w-0">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => jumpToWeekend(-1)}
-            disabled={currentIndex <= 0}
-            className="bg-slate-700 border-slate-400 text-white hover:bg-slate-600 disabled:opacity-40"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-
-          <div className="min-w-0 px-1">
-            <p className="font-semibold text-sm text-white flex items-center gap-2">
-              {weekend?.race.country && (
-                <CountryFlag nationality={weekend.race.country} size="md" />
-              )}
-              <span className="truncate">{weekend?.race.title || 'Calendário'}</span>
-            </p>
-            <p className="text-xs text-slate-200 truncate">
-              {weekend ? `${formatWeekend(weekend.start, weekend.end)} · ${weekend.race.location}` : 'Sem fim de semana'}
-            </p>
-          </div>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => jumpToWeekend(1)}
-            disabled={currentIndex === -1 || currentIndex >= weekends.length - 1}
-            className="bg-slate-700 border-slate-400 text-white hover:bg-slate-600 disabled:opacity-40"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
+    <div className="flex w-full min-w-0 flex-col gap-4">
+      <div className="flex w-full min-w-0 items-center justify-between gap-2 rounded-lg border border-slate-500 bg-slate-800 p-2 sm:gap-4 sm:p-3">
         <Button
-          variant="ghost"
-          size="sm"
-          onClick={goToUpcomingWeekend}
-          className="text-xs text-white hover:bg-slate-700"
+          variant="outline"
+          size="icon"
+          aria-label="Ver Grande Prêmio anterior"
+          onClick={() => jumpToWeekend(-1)}
+          disabled={currentIndex <= 0}
+          className="size-11 shrink-0 border-slate-400 bg-slate-700 text-white shadow-lg shadow-black/20 hover:bg-red-600 hover:text-white disabled:opacity-35"
         >
-          Próximo fim de semana
+          <ChevronLeft className="size-6" />
+        </Button>
+
+        <div className="flex min-w-0 items-center justify-center gap-3 text-center">
+          {weekend?.race.country && (
+            <CountryFlag nationality={weekend.race.country} size="md" />
+          )}
+          <span className="truncate text-base font-black tracking-tight text-white sm:text-lg">
+            {weekend?.race.title || 'Calendário'}
+          </span>
+        </div>
+
+        <Button
+          variant="outline"
+          size="icon"
+          aria-label="Ver próximo Grande Prêmio"
+          onClick={() => jumpToWeekend(1)}
+          disabled={currentIndex === -1 || currentIndex >= weekends.length - 1}
+          className="size-11 shrink-0 border-slate-400 bg-slate-700 text-white shadow-lg shadow-black/20 hover:bg-red-600 hover:text-white disabled:opacity-35"
+        >
+          <ChevronRight className="size-6" />
         </Button>
       </div>
 
       {weekend && (
-        <GameSchedule
-          games={weekend.events}
-          sports={sports}
-          currentDate={currentDate}
-          showAll
-        />
+        <>
+          <div className="relative overflow-hidden rounded-2xl border border-red-700/50 bg-gradient-to-br from-red-950/70 via-slate-900 to-slate-950 p-5 shadow-xl shadow-red-950/20">
+            <div className="absolute inset-y-0 left-0 w-1.5 bg-red-600" />
+            <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.22em] text-red-300">Round {weekend.round} · Grande Prêmio</p>
+                <h2 className="text-2xl font-black tracking-tight text-white sm:text-3xl">{weekend.race.title}</h2>
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-300">
+                  {weekend.race.country && <CountryFlag nationality={weekend.race.country} size="md" />}
+                  <span className="font-semibold text-slate-100">{weekend.race.country || 'Calendário internacional'}</span>
+                  {weekend.race.location && <><span className="text-slate-600">•</span><span>{weekend.race.location}</span></>}
+                </div>
+              </div>
+              <div className="flex flex-1 flex-col justify-between gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-left backdrop-blur-sm sm:min-w-[190px]">
+                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-red-200">Data e Hora</p>
+                <p className="text-lg font-bold capitalize leading-tight text-white">{formatWeekend(weekend.race.date, weekend.race.date)}</p>
+                <p className="text-3xl font-black leading-none text-white">{weekend.race.time || '—'}</p>
+              </div>
+            </div>
+          </div>
+          <GameSchedule games={weekend.events} sports={sports} currentDate={currentDate} showAll />
+        </>
       )}
     </div>
   );

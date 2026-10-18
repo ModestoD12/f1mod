@@ -15,11 +15,9 @@ import { nbaTeams, nbaSchedule2025, nbaStandings } from './data/nbaData';
 import { nflTeams, nflSchedule2025, nflStandings } from './data/nflData';
 
 // Dados dos esportes fixos
-const availableSports = [
-  { id: 'f1', name: 'Fórmula 1', icon: '🏎️', enabled: true },
-  { id: 'nba', name: 'NBA', icon: '🏀', enabled: false },
-  { id: 'nfl', name: 'NFL', icon: '🏈', enabled: false }
-];
+  const availableSports = [
+    { id: 'f1', name: 'Fórmula 1', icon: '🏎️', enabled: true }
+  ];
 
 // Função para gerar jogos baseados nos dados reais da F1
 const generateF1Events = () => {
@@ -354,20 +352,10 @@ export default function App() {
         />
       </header>
 
-      <div className="container mx-auto px-6 py-6">
-        <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-          {/* Sidebar esquerda compacta - Desktop */}
-          <div className="hidden xl:block">
-            {/* Destaques e notícias */}
-            <SportHighlights />
-          </div>
-
+      <div className="container mx-auto px-3 py-4 sm:px-6 sm:py-6">
+        <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-5 md:gap-6">
           {/* Conteúdo principal */}
-          <div className="xl:col-span-4">
-            {/* Sidebar mobile - aparece no topo em telas menores */}
-            <div className="xl:hidden mb-6">
-              <SportHighlights />
-            </div>
+          <div className="md:col-span-5">
             <Card className="bg-slate-900 border-slate-700">
               <CardContent className="p-0 bg-gradient-to-br from-slate-900 to-slate-850">
                 {/* Abas dos esportes */}
@@ -390,7 +378,7 @@ export default function App() {
                             value={sport.id}
                             disabled={!sport.enabled}
                             title={!sport.enabled ? 'Em breve' : undefined}
-                            className={`rounded-none border-b-4 border-transparent transition-all duration-300 flex items-center gap-2 px-6 py-4 relative overflow-hidden data-[state=active]:text-white ${
+                            className={`relative flex min-w-0 items-center gap-2 overflow-hidden rounded-none border-b-4 border-transparent px-3 py-3 transition-all duration-300 data-[state=active]:text-white sm:px-6 sm:py-4 ${
                                 sport.enabled
                                   ? 'text-slate-400 hover:text-slate-200'
                                   : 'text-slate-600 cursor-not-allowed opacity-50'
@@ -430,7 +418,7 @@ export default function App() {
                       <TabsList className="w-full justify-start rounded-none bg-slate-900/50 p-0 border-b border-slate-800">
                         <TabsTrigger 
                           value="schedule" 
-                          className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:bg-slate-800/50 text-slate-400 data-[state=active]:text-white hover:text-slate-200"
+                          className="min-w-0 rounded-none border-b-2 border-transparent px-3 text-sm data-[state=active]:border-blue-500 data-[state=active]:bg-slate-800/50 data-[state=active]:text-white text-slate-400 hover:text-slate-200 sm:px-4 sm:text-base"
                         >
                           <Calendar className="h-4 w-4 mr-2" />
                           Programação
@@ -453,7 +441,7 @@ export default function App() {
                         )}
                       </TabsList>
 
-                      <div className="p-6">
+                      <div className="p-3 sm:p-6">
                         <TabsContent value="schedule" className="mt-0">
                           {activeSport === 'f1' ? (
                             <F1CalendarWrapper
@@ -489,6 +477,11 @@ export default function App() {
               </CardContent>
             </Card>
           </div>
+        </div>
+
+        {/* Destaques e notícias no rodapé */}
+        <div className="mt-6 border-t border-slate-800 pt-6">
+          <SportHighlights />
         </div>
       </div>
     </div>

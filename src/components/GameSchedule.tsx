@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -14,8 +14,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { LiveMatchCard } from "./LiveMatchCard";
-import { ChannelBadge } from "./ChannelBadge";
-import { FavoriteButton } from "./FavoriteButton";
 import { motion } from "motion/react";
 import { getStreamingOptions } from "../services/streamingService";
 import { CountryFlag } from "./CountryFlag";
@@ -86,7 +84,6 @@ export function GameSchedule({
   currentDate,
   showAll = false,
 }: GameScheduleProps) {
-
   const getSportById = (id: string) =>
     sports.find((sport) => sport.id === id);
 
@@ -122,8 +119,8 @@ export function GameSchedule({
   };
 
   // Função para obter opções de streaming de um jogo
-  const getGameStreamingOptions = (game: Game) => {
-    return getStreamingOptions(game.sport, game.session);
+const getGameStreamingOptions = (game: Game) => {
+  return getStreamingOptions(game.sport, game.session);
   };
 
   const handleReminder = (game: Game) => {
@@ -179,9 +176,23 @@ export function GameSchedule({
   // Separar jogos ao vivo dos agendados
   const liveGames = showAll ? [] : filteredGames.filter((game) => game.status === "Ao vivo");
   const scheduledGames = showAll ? filteredGames : filteredGames.filter((game) => game.status !== "Ao vivo");
+  // Todas as sessões ficam na mesma aba; a hierarquia visual diferencia cada tipo.
+  const visibleGames = scheduledGames;
 
   return (
-    <div className="space-y-6">
+    <div className="flex w-full min-w-0 flex-col gap-6">
+      {showAll && (
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-700/80 bg-slate-950/80 px-4 py-3 shadow-xl shadow-black/20">
+          <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-200">Fim de semana de corrida</span>
+          <span className="h-2 w-2 rounded-full bg-red-500" />
+          <span className="text-xs font-semibold text-slate-300">Corridas em destaque</span>
+          <span className="h-2 w-2 rounded-full bg-amber-400" />
+          <span className="text-xs font-semibold text-slate-300">Classificação</span>
+          <span className="h-2 w-2 rounded-full bg-slate-500" />
+          <span className="text-xs font-semibold text-slate-300">Treinos reunidos</span>
+        </div>
+      )}
+
       {/* Jogos ao vivo em destaque */}
       {liveGames.length > 0 && (
         <div className="space-y-3">
@@ -212,7 +223,7 @@ export function GameSchedule({
               Próximos Eventos
             </h3>
           )}
-          {scheduledGames.map((game, index) => {
+          {visibleGames.map((game, index) => {
             const sport = getSportById(game.sport);
             return (
               <motion.div
@@ -222,8 +233,10 @@ export function GameSchedule({
                 transition={{ duration: 0.3, delay: index * 0.05 }}
               >
                 <Card
-                  className={`hover:shadow-2xl transition-all duration-300 border-l-[6px] bg-gradient-to-br from-slate-900 via-slate-850 to-slate-900 overflow-hidden relative group border-2 ${
-                    game.sport === 'f1' ? 'border-red-800/50 hover:border-red-700/70' : 
+                  className={`w-full min-w-0 hover:shadow-2xl transition-all duration-300 border-l-[6px] bg-gradient-to-br from-slate-900 via-slate-850 to-slate-900 overflow-hidden relative group border-2 ${
+                    game.session === 'Race' ? 'ring-1 ring-red-500/30 shadow-red-950/30' :
+                    game.session === 'Qualifying' ? 'opacity-90 ' : 'opacity-75 '}
+                    ${game.sport === 'f1' ? 'border-red-800/50 hover:border-red-700/70' : 
                     game.sport === 'nba' ? 'border-blue-800/50 hover:border-blue-700/70' : 
                     'border-purple-800/50 hover:border-purple-700/70'
                   }`}
@@ -237,11 +250,11 @@ export function GameSchedule({
                   {/* Efeito de brilho ao hover */}
                   <div className="absolute inset-0 speed-lines opacity-0 group-hover:opacity-100 transition-opacity" />
                   
-                  <CardContent className="p-5 relative z-10">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex items-start gap-4 flex-1">
+                  <CardContent className="relative z-10 w-full min-w-0 p-3 sm:p-5">
+                    <div className="grid w-full min-w-0 grid-cols-1 gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+                      <div className="flex w-full min-w-0 items-start gap-3 sm:gap-4">
                         <motion.div 
-                          className={`w-16 h-16 rounded-2xl shadow-xl flex items-center justify-center flex-shrink-0 relative overflow-hidden group-hover:scale-110 transition-transform duration-300 ${
+                          className={`flex size-12 shrink-0 items-center justify-center rounded-xl shadow-xl relative overflow-hidden transition-transform duration-300 sm:size-16 sm:rounded-2xl group-hover:scale-110 ${
                             game.sport === 'f1' ? 'bg-gradient-to-br from-red-500 to-red-700' :
                             game.sport === 'nba' ? 'bg-gradient-to-br from-blue-500 to-blue-700' :
                             'bg-gradient-to-br from-purple-500 to-purple-700'
@@ -250,24 +263,23 @@ export function GameSchedule({
                         >
                           {/* Círculo de fundo */}
                           <div className="absolute inset-0 bg-white/20 rounded-full blur-xl" />
-                          <span className="text-3xl relative z-10 filter drop-shadow-lg">
-                            {sport?.icon}
-                          </span>
                         </motion.div>
 
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-3 flex-wrap">
-                            <h3 className="font-bold text-lg text-white flex items-center gap-2">
+                        <div className="min-w-0 flex-1">
+                          <div className="mb-3 flex flex-wrap items-center gap-2">
+                            <h3 className="flex min-w-0 items-center gap-2 text-base font-bold text-white sm:text-lg">
                               {game.session === "Race" && game.country && (
                                 <CountryFlag nationality={game.country} size="lg" />
                               )}
                               {game.title}
                             </h3>
-                            <Badge
-                              className={`${getStatusColor(game.status)} shadow-md`}
-                            >
-                              {game.status}
-                            </Badge>
+                            {game.status !== "Agendado" && (
+                              <Badge
+                                className={`${getStatusColor(game.status)} shadow-md`}
+                              >
+                                {game.status}
+                              </Badge>
+                            )}
                             {game.sessionType && (
                               <Badge
                                 variant="outline"
@@ -278,21 +290,54 @@ export function GameSchedule({
                             )}
                           </div>
 
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            <div className="rounded-xl px-4 py-2 min-w-[180px]" style={{ background: "#f8fafc", color: "#020617" }}>
-                              <p className="text-[10px] font-bold uppercase tracking-wide">Data</p>
-                              <p className="text-base font-black capitalize">{formatEventDate(game.date)}</p>
+                          <div className="mb-4 flex min-w-0 flex-wrap items-stretch gap-2">
+                            <div className={`min-w-0 flex-1 rounded-xl border px-3 py-2.5 sm:px-4 ${game.session === 'Race' ? 'border-red-400/50 bg-red-600 text-white' : 'border-slate-600 bg-slate-800 text-white'}`}>
+                              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-300">Data e horário</p>
+                              <p className="break-words text-sm font-black capitalize text-white sm:text-base">{formatEventDate(game.date)} · {game.time}</p>
                             </div>
-                            <div className="rounded-xl bg-red-600 px-4 py-2 text-white min-w-[110px]">
-                              <p className="text-[10px] font-bold uppercase tracking-wide">Horário</p>
-                              <p className="text-base font-black">{game.time}</p>
-                            </div>
+                            <Button
+                              onClick={() => handleReminder(game)}
+                              variant="outline"
+                              size="sm"
+                              className="h-auto min-h-full shrink-0 self-stretch border-2 border-slate-600 bg-slate-800/80 px-4 font-semibold text-slate-200 shadow-md hover:border-slate-500 hover:bg-slate-700/80 hover:shadow-lg"
+                            >
+                              <Bell className="mr-1 h-4 w-4" />
+                              Avisar
+                            </Button>
                           </div>
 
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                            <div className="flex items-center">
-                              <ChannelBadge channel={game.channel} />
+                          {getGameStreamingOptions(game).length > 0 && (
+                            <div className="mb-4 rounded-xl border border-slate-700/60 bg-slate-800/50 p-3">
+                              <div className="mb-2 flex items-center gap-2">
+                                <span className="text-sm font-bold text-white">Onde assistir</span>
+                              </div>
+                              <div className="flex flex-wrap gap-2">
+                                {getGameStreamingOptions(game).map((option, idx) => (
+                                  <a
+                                    key={idx}
+                                    href={option.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-all hover:scale-105 hover:shadow-xl ${
+                                      option.isPaid
+                                        ? 'bg-orange-500 text-white hover:bg-orange-400 shadow-orange-500/30 shadow-lg'
+                                        : 'bg-green-500 text-white hover:bg-green-400 shadow-green-500/30 shadow-lg'
+                                    }`}
+                                  >
+                                    <ExternalLink className="h-4 w-4" />
+                                    {option.name}
+                                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                                      option.isPaid ? 'bg-orange-700 text-orange-100' : 'bg-green-700 text-green-100'
+                                    }`}>
+                                      {option.isPaid ? 'PAGO' : 'GRÁTIS'}
+                                    </span>
+                                  </a>
+                                ))}
+                              </div>
                             </div>
+                          )}
+
+                          <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
                             {game.duration && (
                               <div className="flex items-center gap-2 bg-gradient-to-r from-slate-800/70 to-slate-800/50 px-3 py-2 rounded-lg shadow-sm border border-slate-700/50">
                                 <Timer className="h-4 w-4 flex-shrink-0 text-purple-400" />
@@ -313,7 +358,7 @@ export function GameSchedule({
 
                           {/* Dados específicos da F1 */}
                           {game.sport === "f1" && (
-                            <div className="mt-3 p-4 bg-gradient-to-br from-red-950/40 via-orange-950/40 to-red-950/40 rounded-xl border-2 border-red-800/50 text-xs space-y-2 shadow-inner backdrop-blur-sm">
+                            <div className="mt-3 grid min-w-0 grid-cols-1 gap-3 rounded-xl border-2 border-red-800/50 bg-gradient-to-br from-red-950/40 via-orange-950/40 to-red-950/40 p-3 text-xs shadow-inner backdrop-blur-sm sm:p-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.82fr)] lg:items-start">
                               {game.description && (
                                 <p className="text-sm font-medium text-red-300">
                                   {game.description}
@@ -335,13 +380,6 @@ export function GameSchedule({
                                 )}
                               </div>
 
-                              {game.weather && (
-                                <div className="text-slate-300 bg-slate-900/60 px-2 py-1.5 rounded border border-red-900/30">
-                                  <span className="mr-1">🌤️</span>
-                                  <span className="font-medium">{game.weather}</span>
-                                </div>
-                              )}
-
                               {game.tyreStrategy && (
                                 <div className="text-slate-300 bg-slate-900/60 px-2 py-1.5 rounded border border-red-900/30">
                                   <span className="mr-1">🏎️</span>
@@ -352,10 +390,14 @@ export function GameSchedule({
                               )}
 
                               {game.circuit && (
-                                <div className="text-slate-300 border-t border-red-800/50 pt-2 mt-2">
-                                  <span className="font-bold text-red-400">
-                                    {game.circuit}
-                                  </span>
+                                <div className="mt-2 border-t border-red-800/50 pt-2">
+                                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-red-300">Circuito</span>
+                                  <p className="font-bold text-white">{game.circuit}</p>
+                                </div>
+                              )}
+                              {game.session === "Race" && game.circuitId && (
+                                <div className="mt-1 min-w-0 lg:col-start-2 lg:row-start-1 lg:row-span-1 lg:mt-0">
+                                  <CircuitMap circuitId={game.circuitId} circuitName={game.circuit} weather={game.weather} />
                                 </div>
                               )}
                             </div>
@@ -385,66 +427,14 @@ export function GameSchedule({
                         </div>
                       </div>
 
-                      <div className="flex flex-col gap-2 flex-shrink-0">
-                        <Button
-                          onClick={() => handleReminder(game)}
-                          variant="outline"
-                          size="sm"
-                          className="shadow-md hover:shadow-lg border-2 font-semibold bg-slate-800/50 text-slate-200 border-slate-600 hover:bg-slate-700/50 hover:border-slate-500"
-                        >
-                          <Bell className="h-4 w-4 mr-1" />
-                          Avisar
-                        </Button>
-                        <FavoriteButton
-                          id={game.id.toString()}
-                          name={game.title}
-                          type="event"
-                          variant="icon"
-                        />
-                      </div>
                     </div>
 
-                    {/* Links de Streaming */}
-                    {getGameStreamingOptions(game).length > 0 && (
-                      <div className="mt-4 pt-4 border-t border-slate-600/50">
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="text-sm font-bold text-white">📺 Onde assistir</span>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {getGameStreamingOptions(game).map((option, idx) => (
-                            <a
-                              key={idx}
-                              href={option.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all hover:scale-105 hover:shadow-xl ${
-                                option.isPaid
-                                  ? 'bg-orange-500 text-white hover:bg-orange-400 shadow-orange-500/30 shadow-lg'
-                                  : 'bg-green-500 text-white hover:bg-green-400 shadow-green-500/30 shadow-lg'
-                              }`}
-                            >
-                              <ExternalLink className="w-4 h-4" />
-                              {option.name}
-                              <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                                option.isPaid ? 'bg-orange-700 text-orange-100' : 'bg-green-700 text-green-100'
-                              }`}>
-                                {option.isPaid ? 'PAGO' : 'GRÁTIS'}
-                              </span>
-                            </a>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </CardContent>
                 </Card>
               </motion.div>
             );
           })}
         </div>
-      )}
-
-      {showAll && filteredGames[0]?.circuitId && (
-        <CircuitMap circuitId={filteredGames[0].circuitId} circuitName={filteredGames[0].circuit} />
       )}
 
       {filteredGames.length === 0 && (

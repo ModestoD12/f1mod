@@ -51,7 +51,7 @@ export function SportButtons({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-wrap gap-2">
-          {sports.map((sport) => (
+          {sports.filter((sport) => sport.id === 'f1').map((sport) => (
             <Button
               key={sport.id}
               variant={selectedSports.includes(sport.id) ? "default" : "outline"}
