@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { LiveMatchCard } from "./LiveMatchCard";
-import { ChannelBadge } from "./ChannelBadge";
 import { FavoriteButton } from "./FavoriteButton";
 import { motion } from "motion/react";
 import { getStreamingOptions } from "../services/streamingService";
@@ -122,7 +121,9 @@ export function GameSchedule({
 
   // Função para obter opções de streaming de um jogo
   const getGameStreamingOptions = (game: Game) => {
-    return getStreamingOptions(game.sport, game.session);
+    return getStreamingOptions(game.sport, game.session).filter(
+      (option) => option.name.toLowerCase() !== 'globo',
+    );
   };
 
   const handleReminder = (game: Game) => {
@@ -343,9 +344,6 @@ export function GameSchedule({
                           )}
 
                           <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
-                            <div className="flex items-center">
-                              <ChannelBadge channel={game.channel} />
-                            </div>
                             {game.duration && (
                               <div className="flex items-center gap-2 bg-gradient-to-r from-slate-800/70 to-slate-800/50 px-3 py-2 rounded-lg shadow-sm border border-slate-700/50">
                                 <Timer className="h-4 w-4 flex-shrink-0 text-purple-400" />
