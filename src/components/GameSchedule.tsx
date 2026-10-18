@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { Card, CardContent } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -20,7 +20,6 @@ import { motion } from "motion/react";
 import { getStreamingOptions } from "../services/streamingService";
 import { CountryFlag } from "./CountryFlag";
 import { CircuitMap } from "./CircuitMap";
-import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 
 interface Game {
   id: string | number;
@@ -87,8 +86,6 @@ export function GameSchedule({
   currentDate,
   showAll = false,
 }: GameScheduleProps) {
-  const [sessionTab, setSessionTab] = useState<"races" | "qualifying" | "practice">("races");
-
   const getSportById = (id: string) =>
     sports.find((sport) => sport.id === id);
 
@@ -181,30 +178,20 @@ export function GameSchedule({
   // Separar jogos ao vivo dos agendados
   const liveGames = showAll ? [] : filteredGames.filter((game) => game.status === "Ao vivo");
   const scheduledGames = showAll ? filteredGames : filteredGames.filter((game) => game.status !== "Ao vivo");
-  const sessionGroups = useMemo(() => ({
-    races: scheduledGames.filter((game) => game.session === "Race" || game.session === "Sprint"),
-    qualifying: scheduledGames.filter((game) => game.session?.includes("Qualifying") || game.session === "Sprint Shootout"),
-    practice: scheduledGames.filter((game) => ["FP1", "FP2", "FP3"].includes(game.session || "")),
-  }), [scheduledGames]);
-  const visibleGames = showAll ? sessionGroups[sessionTab] : scheduledGames;
+  // Todas as sessões ficam na mesma aba; a hierarquia visual diferencia cada tipo.
+  const visibleGames = scheduledGames;
 
   return (
     <div className="space-y-6">
       {showAll && (
-        <div className="rounded-2xl border border-slate-700/80 bg-slate-950/80 p-1.5 shadow-xl shadow-black/20">
-          <Tabs value={sessionTab} onValueChange={(value) => setSessionTab(value as typeof sessionTab)}>
-            <TabsList className="grid h-auto w-full grid-cols-3 gap-1 bg-transparent">
-              <TabsTrigger value="races" className="group rounded-xl px-3 py-3 text-left text-slate-400 data-[state=active]:bg-red-600 data-[state=active]:text-white">
-                <span className="flex flex-col items-start"><span className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-70">Principal</span><span className="font-bold">Corridas</span></span>
-              </TabsTrigger>
-              <TabsTrigger value="qualifying" className="group rounded-xl px-3 py-3 text-left text-slate-400 data-[state=active]:bg-amber-500 data-[state=active]:text-slate-950">
-                <span className="flex flex-col items-start"><span className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-70">Grid</span><span className="font-bold">Classificação</span></span>
-              </TabsTrigger>
-              <TabsTrigger value="practice" className="group rounded-xl px-3 py-3 text-left text-slate-400 data-[state=active]:bg-slate-700 data-[state=active]:text-slate-100">
-                <span className="flex flex-col items-start"><span className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-70">Sessões</span><span className="font-bold">Treinos</span></span>
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-700/80 bg-slate-950/80 px-4 py-3 shadow-xl shadow-black/20">
+          <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-200">Fim de semana de corrida</span>
+          <span className="h-2 w-2 rounded-full bg-red-500" />
+          <span className="text-xs font-semibold text-slate-300">Corridas em destaque</span>
+          <span className="h-2 w-2 rounded-full bg-amber-400" />
+          <span className="text-xs font-semibold text-slate-300">Classificação</span>
+          <span className="h-2 w-2 rounded-full bg-slate-500" />
+          <span className="text-xs font-semibold text-slate-300">Treinos reunidos</span>
         </div>
       )}
 
@@ -360,9 +347,9 @@ export function GameSchedule({
                               </div>
 
                               {game.weather && (
-                                <div className="text-slate-300 bg-slate-900/60 px-2 py-1.5 rounded border border-red-900/30">
-                                  <span className="mr-1">🌤️</span>
-                                  <span className="font-medium">{game.weather}</span>
+                                <div className="flex items-center justify-between gap-3 rounded border border-sky-800/60 bg-sky-950/50 px-3 py-2 text-sky-100">
+                                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-sky-300">Previsão para a corrida</span>
+                                  <span className="font-bold">{game.weather}</span>
                                 </div>
                               )}
 
@@ -376,10 +363,14 @@ export function GameSchedule({
                               )}
 
                               {game.circuit && (
-                                <div className="text-slate-300 border-t border-red-800/50 pt-2 mt-2">
-                                  <span className="font-bold text-red-400">
-                                    {game.circuit}
-                                  </span>
+                                <div className="mt-2 border-t border-red-800/50 pt-2">
+                                  <span className="text-[10px] font-black uppercase tracking-[0.16em] text-red-300">Circuito</span>
+                                  <p className="font-bold text-white">{game.circuit}</p>
+                                </div>
+                              )}
+                              {game.session === "Race" && game.circuitId && (
+                                <div className="mt-4">
+                                  <CircuitMap circuitId={game.circuitId} circuitName={game.circuit} />
                                 </div>
                               )}
                             </div>
@@ -465,10 +456,6 @@ export function GameSchedule({
             );
           })}
         </div>
-      )}
-
-      {showAll && filteredGames[0]?.circuitId && (
-        <CircuitMap circuitId={filteredGames[0].circuitId} circuitName={filteredGames[0].circuit} />
       )}
 
       {filteredGames.length === 0 && (
