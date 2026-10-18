@@ -393,8 +393,8 @@ const getGameStreamingOptions = (game: Game) => {
                                     <CloudSun className="h-7 w-7 shrink-0 text-amber-300" aria-hidden="true" />
                                   )}
                                   <div className="min-w-0">
-                                    <span className="block text-[10px] font-black uppercase tracking-[0.16em] text-sky-300">Previsão do tempo</span>
-                                    <span className="mt-0.5 block truncate text-sm font-semibold text-white">{game.weather || "Dados meteorológicos em breve"}</span>
+                                    <span className="block text-[10px] font-black uppercase tracking-[0.16em] !text-sky-300">Previsão do tempo</span>
+                                    <span className="mt-0.5 block truncate text-sm font-semibold !text-white">{game.weather || "Dados meteorológicos em breve"}</span>
                                   </div>
                                 </div>
                                 <div className="flex shrink-0 items-center gap-1 text-white" aria-label="Temperatura prevista">
