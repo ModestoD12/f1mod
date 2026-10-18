@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { LiveMatchCard } from "./LiveMatchCard";
-import { FavoriteButton } from "./FavoriteButton";
 import { motion } from "motion/react";
 import { getStreamingOptions } from "../services/streamingService";
 import { CountryFlag } from "./CountryFlag";
@@ -450,14 +449,6 @@ const getGameStreamingOptions = (game: Game) => {
                         </div>
                       </div>
 
-                      <div className="flex w-full shrink-0 flex-row gap-2 sm:w-auto sm:flex-col">
-                        <FavoriteButton
-                          id={game.id.toString()}
-                          name={game.title}
-                          type="event"
-                          variant="icon"
-                        />
-                      </div>
                     </div>
 
                   </CardContent>
