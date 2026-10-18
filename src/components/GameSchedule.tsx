@@ -40,6 +40,9 @@ interface Game {
   laps?: string;
   distance?: string;
   weather?: string;
+  latitude?: number;
+  longitude?: number;
+  timeUtc?: string;
   pole?: string;
   fastestLap?: string;
   tyreStrategy?: string;
@@ -397,7 +400,15 @@ const getGameStreamingOptions = (game: Game) => {
                               )}
                               {game.session === "Race" && game.circuitId && (
                                 <div className="mt-1 min-w-0 lg:col-start-2 lg:row-start-1 lg:row-span-1 lg:mt-0">
-                                  <CircuitMap circuitId={game.circuitId} circuitName={game.circuit} weather={game.weather} />
+                                  <CircuitMap
+                                    circuitId={game.circuitId}
+                                    circuitName={game.circuit}
+                                    weather={game.weather}
+                                    latitude={game.latitude}
+                                    longitude={game.longitude}
+                                    date={game.date}
+                                    timeUtc={game.timeUtc}
+                                  />
                                 </div>
                               )}
                             </div>
