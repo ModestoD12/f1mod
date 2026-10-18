@@ -353,17 +353,17 @@ export default function App() {
       </header>
 
       <div className="container mx-auto px-3 py-4 sm:px-6 sm:py-6">
-        <div className="grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-5 xl:gap-6">
+        <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-5 md:gap-6">
           {/* Sidebar esquerda compacta - Desktop */}
-          <div className="hidden xl:block">
+          <div className="hidden md:block">
             {/* Destaques e notícias */}
             <SportHighlights />
           </div>
 
           {/* Conteúdo principal */}
-          <div className="xl:col-span-4">
+          <div className="md:col-span-4">
             {/* Sidebar mobile - aparece no topo em telas menores */}
-            <div className="xl:hidden mb-6">
+            <div className="md:hidden mb-6">
               <SportHighlights />
             </div>
             <Card className="bg-slate-900 border-slate-700">
