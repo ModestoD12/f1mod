@@ -352,8 +352,8 @@ export default function App() {
         />
       </header>
 
-      <div className="container mx-auto px-6 py-6">
-        <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+      <div className="container mx-auto px-3 py-4 sm:px-6 sm:py-6">
+        <div className="grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-5 xl:gap-6">
           {/* Sidebar esquerda compacta - Desktop */}
           <div className="hidden xl:block">
             {/* Destaques e notícias */}
@@ -388,7 +388,7 @@ export default function App() {
                             value={sport.id}
                             disabled={!sport.enabled}
                             title={!sport.enabled ? 'Em breve' : undefined}
-                            className={`rounded-none border-b-4 border-transparent transition-all duration-300 flex items-center gap-2 px-6 py-4 relative overflow-hidden data-[state=active]:text-white ${
+                            className={`relative flex min-w-0 items-center gap-2 overflow-hidden rounded-none border-b-4 border-transparent px-3 py-3 transition-all duration-300 data-[state=active]:text-white sm:px-6 sm:py-4 ${
                                 sport.enabled
                                   ? 'text-slate-400 hover:text-slate-200'
                                   : 'text-slate-600 cursor-not-allowed opacity-50'
@@ -428,7 +428,7 @@ export default function App() {
                       <TabsList className="w-full justify-start rounded-none bg-slate-900/50 p-0 border-b border-slate-800">
                         <TabsTrigger 
                           value="schedule" 
-                          className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:bg-slate-800/50 text-slate-400 data-[state=active]:text-white hover:text-slate-200"
+                          className="min-w-0 rounded-none border-b-2 border-transparent px-3 text-sm data-[state=active]:border-blue-500 data-[state=active]:bg-slate-800/50 data-[state=active]:text-white text-slate-400 hover:text-slate-200 sm:px-4 sm:text-base"
                         >
                           <Calendar className="h-4 w-4 mr-2" />
                           Programação
@@ -451,7 +451,7 @@ export default function App() {
                         )}
                       </TabsList>
 
-                      <div className="p-6">
+                      <div className="p-3 sm:p-6">
                         <TabsContent value="schedule" className="mt-0">
                           {activeSport === 'f1' ? (
                             <F1CalendarWrapper

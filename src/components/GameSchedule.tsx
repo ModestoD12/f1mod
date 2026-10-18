@@ -252,11 +252,11 @@ export function GameSchedule({
                   {/* Efeito de brilho ao hover */}
                   <div className="absolute inset-0 speed-lines opacity-0 group-hover:opacity-100 transition-opacity" />
                   
-                  <CardContent className="p-5 relative z-10">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex items-start gap-4 flex-1">
+                  <CardContent className="relative z-10 p-3 sm:p-5">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="flex min-w-0 flex-1 items-start gap-3 sm:gap-4">
                         <motion.div 
-                          className={`w-16 h-16 rounded-2xl shadow-xl flex items-center justify-center flex-shrink-0 relative overflow-hidden group-hover:scale-110 transition-transform duration-300 ${
+                          className={`flex size-12 shrink-0 items-center justify-center rounded-xl shadow-xl relative overflow-hidden transition-transform duration-300 sm:size-16 sm:rounded-2xl group-hover:scale-110 ${
                             game.sport === 'f1' ? 'bg-gradient-to-br from-red-500 to-red-700' :
                             game.sport === 'nba' ? 'bg-gradient-to-br from-blue-500 to-blue-700' :
                             'bg-gradient-to-br from-purple-500 to-purple-700'
@@ -270,9 +270,9 @@ export function GameSchedule({
                           </span>
                         </motion.div>
 
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-3 flex-wrap">
-                            <h3 className="font-bold text-lg text-white flex items-center gap-2">
+                        <div className="min-w-0 flex-1">
+                          <div className="mb-3 flex flex-wrap items-center gap-2">
+                            <h3 className="flex min-w-0 items-center gap-2 text-base font-bold text-white sm:text-lg">
                               {game.session === "Race" && game.country && (
                                 <CountryFlag nationality={game.country} size="lg" />
                               )}
@@ -295,14 +295,14 @@ export function GameSchedule({
                             )}
                           </div>
 
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            <div className={`rounded-xl px-4 py-2.5 min-w-[240px] border ${game.session === 'Race' ? 'bg-red-600 text-white border-red-400/50' : 'bg-slate-800 text-white border-slate-600'}`}>
+                          <div className="mb-4 flex flex-wrap gap-2">
+                            <div className={`min-w-0 flex-1 rounded-xl border px-3 py-2.5 sm:px-4 ${game.session === 'Race' ? 'border-red-400/50 bg-red-600 text-white' : 'border-slate-600 bg-slate-800 text-white'}`}>
                               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-300">Data e horário</p>
-                              <p className="text-base font-black capitalize text-white">{formatEventDate(game.date)} · {game.time}</p>
+                              <p className="break-words text-sm font-black capitalize text-white sm:text-base">{formatEventDate(game.date)} · {game.time}</p>
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                          <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
                             <div className="flex items-center">
                               <ChannelBadge channel={game.channel} />
                             </div>
@@ -326,7 +326,7 @@ export function GameSchedule({
 
                           {/* Dados específicos da F1 */}
                           {game.sport === "f1" && (
-                            <div className="mt-3 p-4 bg-gradient-to-br from-red-950/40 via-orange-950/40 to-red-950/40 rounded-xl border-2 border-red-800/50 text-xs space-y-2 shadow-inner backdrop-blur-sm">
+                            <div className="mt-3 space-y-2 rounded-xl border-2 border-red-800/50 bg-gradient-to-br from-red-950/40 via-orange-950/40 to-red-950/40 p-3 text-xs shadow-inner backdrop-blur-sm sm:p-4">
                               {game.description && (
                                 <p className="text-sm font-medium text-red-300">
                                   {game.description}
@@ -402,7 +402,7 @@ export function GameSchedule({
                         </div>
                       </div>
 
-                      <div className="flex flex-col gap-2 flex-shrink-0">
+                      <div className="flex w-full shrink-0 flex-row gap-2 sm:w-auto sm:flex-col">
                         <Button
                           onClick={() => handleReminder(game)}
                           variant="outline"

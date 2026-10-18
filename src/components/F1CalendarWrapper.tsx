@@ -128,7 +128,7 @@ export function F1CalendarWrapper({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-4 rounded-lg border border-slate-500 bg-slate-800 p-3">
+      <div className="flex items-center justify-between gap-2 rounded-lg border border-slate-500 bg-slate-800 p-2 sm:gap-4 sm:p-3">
         <Button
           variant="outline"
           size="icon"
