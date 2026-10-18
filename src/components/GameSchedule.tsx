@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { Card, CardContent } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -20,6 +20,7 @@ import { motion } from "motion/react";
 import { getStreamingOptions } from "../services/streamingService";
 import { CountryFlag } from "./CountryFlag";
 import { CircuitMap } from "./CircuitMap";
+import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 
 interface Game {
   id: string | number;
@@ -86,6 +87,7 @@ export function GameSchedule({
   currentDate,
   showAll = false,
 }: GameScheduleProps) {
+  const [sessionTab, setSessionTab] = useState<"races" | "qualifying" | "practice">("races");
 
   const getSportById = (id: string) =>
     sports.find((sport) => sport.id === id);
@@ -179,9 +181,33 @@ export function GameSchedule({
   // Separar jogos ao vivo dos agendados
   const liveGames = showAll ? [] : filteredGames.filter((game) => game.status === "Ao vivo");
   const scheduledGames = showAll ? filteredGames : filteredGames.filter((game) => game.status !== "Ao vivo");
+  const sessionGroups = useMemo(() => ({
+    races: scheduledGames.filter((game) => game.session === "Race" || game.session === "Sprint"),
+    qualifying: scheduledGames.filter((game) => game.session?.includes("Qualifying") || game.session === "Sprint Shootout"),
+    practice: scheduledGames.filter((game) => ["FP1", "FP2", "FP3"].includes(game.session || "")),
+  }), [scheduledGames]);
+  const visibleGames = showAll ? sessionGroups[sessionTab] : scheduledGames;
 
   return (
     <div className="space-y-6">
+      {showAll && (
+        <div className="rounded-2xl border border-slate-700/80 bg-slate-950/80 p-1.5 shadow-xl shadow-black/20">
+          <Tabs value={sessionTab} onValueChange={(value) => setSessionTab(value as typeof sessionTab)}>
+            <TabsList className="grid h-auto w-full grid-cols-3 gap-1 bg-transparent">
+              <TabsTrigger value="races" className="group rounded-xl px-3 py-3 text-left text-slate-400 data-[state=active]:bg-red-600 data-[state=active]:text-white">
+                <span className="flex flex-col items-start"><span className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-70">Principal</span><span className="font-bold">Corridas</span></span>
+              </TabsTrigger>
+              <TabsTrigger value="qualifying" className="group rounded-xl px-3 py-3 text-left text-slate-400 data-[state=active]:bg-amber-500 data-[state=active]:text-slate-950">
+                <span className="flex flex-col items-start"><span className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-70">Grid</span><span className="font-bold">Classificação</span></span>
+              </TabsTrigger>
+              <TabsTrigger value="practice" className="group rounded-xl px-3 py-3 text-left text-slate-400 data-[state=active]:bg-slate-700 data-[state=active]:text-slate-100">
+                <span className="flex flex-col items-start"><span className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-70">Sessões</span><span className="font-bold">Treinos</span></span>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+      )}
+
       {/* Jogos ao vivo em destaque */}
       {liveGames.length > 0 && (
         <div className="space-y-3">
@@ -212,7 +238,7 @@ export function GameSchedule({
               Próximos Eventos
             </h3>
           )}
-          {scheduledGames.map((game, index) => {
+          {visibleGames.map((game, index) => {
             const sport = getSportById(game.sport);
             return (
               <motion.div
@@ -223,7 +249,9 @@ export function GameSchedule({
               >
                 <Card
                   className={`hover:shadow-2xl transition-all duration-300 border-l-[6px] bg-gradient-to-br from-slate-900 via-slate-850 to-slate-900 overflow-hidden relative group border-2 ${
-                    game.sport === 'f1' ? 'border-red-800/50 hover:border-red-700/70' : 
+                    game.session === 'Race' ? 'ring-1 ring-red-500/30 shadow-red-950/30' :
+                    game.session === 'Qualifying' ? 'opacity-90 ' : 'opacity-75 '}
+                    ${game.sport === 'f1' ? 'border-red-800/50 hover:border-red-700/70' : 
                     game.sport === 'nba' ? 'border-blue-800/50 hover:border-blue-700/70' : 
                     'border-purple-800/50 hover:border-purple-700/70'
                   }`}
@@ -279,13 +307,9 @@ export function GameSchedule({
                           </div>
 
                           <div className="flex flex-wrap gap-2 mb-4">
-                            <div className="rounded-xl px-4 py-2 min-w-[180px]" style={{ background: "#f8fafc", color: "#020617" }}>
-                              <p className="text-[10px] font-bold uppercase tracking-wide">Data</p>
-                              <p className="text-base font-black capitalize">{formatEventDate(game.date)}</p>
-                            </div>
-                            <div className="rounded-xl bg-red-600 px-4 py-2 text-white min-w-[110px]">
-                              <p className="text-[10px] font-bold uppercase tracking-wide">Horário</p>
-                              <p className="text-base font-black">{game.time}</p>
+                            <div className={`rounded-xl px-4 py-2.5 min-w-[240px] border ${game.session === 'Race' ? 'bg-red-600 text-white border-red-400/50' : 'bg-slate-800 text-slate-100 border-slate-600'}`}>
+                              <p className="text-[10px] font-bold uppercase tracking-[0.16em] opacity-70">Data e horário</p>
+                              <p className="text-base font-black capitalize">{formatEventDate(game.date)} · {game.time}</p>
                             </div>
                           </div>
 

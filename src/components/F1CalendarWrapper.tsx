@@ -180,12 +180,28 @@ export function F1CalendarWrapper({
       </div>
 
       {weekend && (
-        <GameSchedule
-          games={weekend.events}
-          sports={sports}
-          currentDate={currentDate}
-          showAll
-        />
+        <>
+          <div className="relative overflow-hidden rounded-2xl border border-red-700/50 bg-gradient-to-br from-red-950/70 via-slate-900 to-slate-950 p-5 shadow-xl shadow-red-950/20">
+            <div className="absolute inset-y-0 left-0 w-1.5 bg-red-600" />
+            <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.22em] text-red-300">Round {weekend.round} · Grande Prêmio</p>
+                <h2 className="text-2xl font-black tracking-tight text-white sm:text-3xl">{weekend.race.title}</h2>
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-300">
+                  {weekend.race.country && <CountryFlag nationality={weekend.race.country} size="md" />}
+                  <span className="font-semibold text-slate-100">{weekend.race.country || 'Calendário internacional'}</span>
+                  {weekend.race.location && <><span className="text-slate-600">•</span><span>{weekend.race.location}</span></>}
+                </div>
+              </div>
+              <div className="rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-left backdrop-blur-sm sm:min-w-[190px]">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-red-200">Corrida principal</p>
+                <p className="mt-1 text-sm font-bold capitalize text-white">{formatWeekend(weekend.race.date, weekend.race.date)}</p>
+                <p className="text-2xl font-black text-white">{weekend.race.time || '—'}</p>
+              </div>
+            </div>
+          </div>
+          <GameSchedule games={weekend.events} sports={sports} currentDate={currentDate} showAll />
+        </>
       )}
     </div>
   );
