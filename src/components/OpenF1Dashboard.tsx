@@ -354,8 +354,8 @@ export function OpenF1Dashboard() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-        <Card className="xl:col-span-3 bg-slate-900 border-slate-400 text-white">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+        <Card className="min-w-0 bg-slate-900 border-slate-400 text-white">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg text-white flex items-center gap-2">
               <MapPin className="h-5 w-5 text-red-400" />
