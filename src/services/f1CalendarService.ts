@@ -8,6 +8,8 @@ export interface F1Race {
   circuitName: string;
   locality: string;
   country: string;
+  latitude: number;
+  longitude: number;
   date: string;
   time: string;
   sessions: {
@@ -61,6 +63,9 @@ export interface CalendarEvent {
   circuitId?: string;
   location?: string;
   country?: string;
+  latitude?: number;
+  longitude?: number;
+  timeUtc?: string;
   description?: string;
   laps?: string;
   round?: number;
@@ -74,6 +79,8 @@ function mapRace(race: any): F1Race {
     circuitName: race.Circuit.circuitName,
     locality: race.Circuit.Location.locality,
     country: race.Circuit.Location.country,
+    latitude: parseFloat(race.Circuit.Location.lat),
+    longitude: parseFloat(race.Circuit.Location.long),
     date: race.date,
     time: race.time || '14:00:00Z',
     sessions: {
@@ -169,6 +176,8 @@ export const f1CalendarApi = {
         circuitId: race.circuitId,
         location: `${race.locality}, ${race.country}`,
         country: race.country,
+        latitude: race.latitude,
+        longitude: race.longitude,
         round: parseInt(race.round, 10),
       };
 
@@ -179,6 +188,7 @@ export const f1CalendarApi = {
           title: `${race.raceName} - Treino Livre 1`,
           date: race.sessions.fp1.date,
           time: this.formatTime(race.sessions.fp1.time),
+          timeUtc: race.sessions.fp1.time,
           channel: 'sportv',
           status: sessionStatus(race.sessions.fp1.date, race.sessions.fp1.time, 60),
           session: 'FP1',
@@ -195,6 +205,7 @@ export const f1CalendarApi = {
           title: `${race.raceName} - Treino Livre 2`,
           date: race.sessions.fp2.date,
           time: this.formatTime(race.sessions.fp2.time),
+          timeUtc: race.sessions.fp2.time,
           channel: 'sportv',
           status: sessionStatus(race.sessions.fp2.date, race.sessions.fp2.time, 60),
           session: 'FP2',
@@ -211,6 +222,7 @@ export const f1CalendarApi = {
           title: `${race.raceName} - Treino Livre 3`,
           date: race.sessions.fp3.date,
           time: this.formatTime(race.sessions.fp3.time),
+          timeUtc: race.sessions.fp3.time,
           channel: 'sportv',
           status: sessionStatus(race.sessions.fp3.date, race.sessions.fp3.time, 60),
           session: 'FP3',
@@ -227,6 +239,7 @@ export const f1CalendarApi = {
           title: `${race.raceName} - Classificação`,
           date: race.sessions.qualifying.date,
           time: this.formatTime(race.sessions.qualifying.time),
+          timeUtc: race.sessions.qualifying.time,
           channel: 'Globo',
           status: sessionStatus(race.sessions.qualifying.date, race.sessions.qualifying.time, 60),
           session: 'Qualifying',
@@ -243,6 +256,7 @@ export const f1CalendarApi = {
           title: `${race.raceName} - Classificação Sprint`,
           date: race.sessions.sprintQualifying.date,
           time: this.formatTime(race.sessions.sprintQualifying.time),
+          timeUtc: race.sessions.sprintQualifying.time,
           channel: 'Globo',
           status: sessionStatus(race.sessions.sprintQualifying.date, race.sessions.sprintQualifying.time, 45),
           session: 'Sprint Qualifying',
@@ -259,6 +273,7 @@ export const f1CalendarApi = {
           title: `${race.raceName} - Sprint`,
           date: race.sessions.sprint.date,
           time: this.formatTime(race.sessions.sprint.time),
+          timeUtc: race.sessions.sprint.time,
           channel: 'Globo',
           status: sessionStatus(race.sessions.sprint.date, race.sessions.sprint.time, 45),
           session: 'Sprint',
@@ -274,6 +289,7 @@ export const f1CalendarApi = {
         title: race.raceName,
         date: race.sessions.race.date,
         time: this.formatTime(race.sessions.race.time),
+        timeUtc: race.sessions.race.time,
         channel: 'Globo',
         status: sessionStatus(race.sessions.race.date, race.sessions.race.time, 150),
         session: 'Race',
