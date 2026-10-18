@@ -111,13 +111,6 @@ export function CircuitMap({ circuitId, circuitName }: CircuitMapProps) {
           ))}
           <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">setores</span>
         </div>
-        <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-sky-800/70 bg-sky-950/60 px-3 py-2.5" aria-label="Previsão do tempo">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-sky-300">Previsão do tempo</p>
-            <p className="mt-0.5 text-xs text-sky-100">Dados meteorológicos em breve</p>
-          </div>
-          <span className="text-xl" aria-hidden="true">—</span>
-        </div>
         </>
       ) : (
         <p className="mt-6 text-sm text-white">
