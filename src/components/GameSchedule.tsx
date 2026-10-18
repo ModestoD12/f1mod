@@ -264,9 +264,6 @@ const getGameStreamingOptions = (game: Game) => {
                         >
                           {/* Círculo de fundo */}
                           <div className="absolute inset-0 bg-white/20 rounded-full blur-xl" />
-                          <span className="text-3xl relative z-10 filter drop-shadow-lg">
-                            {sport?.icon}
-                          </span>
                         </motion.div>
 
                         <div className="min-w-0 flex-1">
