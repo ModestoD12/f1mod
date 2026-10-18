@@ -278,11 +278,13 @@ export function GameSchedule({
                               )}
                               {game.title}
                             </h3>
-                            <Badge
-                              className={`${getStatusColor(game.status)} shadow-md`}
-                            >
-                              {game.status}
-                            </Badge>
+                            {game.status !== "Agendado" && (
+                              <Badge
+                                className={`${getStatusColor(game.status)} shadow-md`}
+                              >
+                                {game.status}
+                              </Badge>
+                            )}
                             {game.sessionType && (
                               <Badge
                                 variant="outline"
