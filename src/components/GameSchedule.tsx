@@ -182,7 +182,7 @@ export function GameSchedule({
   const visibleGames = scheduledGames;
 
   return (
-    <div className="space-y-6">
+    <div className="flex w-full min-w-0 flex-col gap-6">
       {showAll && (
         <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-700/80 bg-slate-950/80 px-4 py-3 shadow-xl shadow-black/20">
           <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-200">Fim de semana de corrida</span>
@@ -235,7 +235,7 @@ export function GameSchedule({
                 transition={{ duration: 0.3, delay: index * 0.05 }}
               >
                 <Card
-                  className={`hover:shadow-2xl transition-all duration-300 border-l-[6px] bg-gradient-to-br from-slate-900 via-slate-850 to-slate-900 overflow-hidden relative group border-2 ${
+                  className={`w-full min-w-0 hover:shadow-2xl transition-all duration-300 border-l-[6px] bg-gradient-to-br from-slate-900 via-slate-850 to-slate-900 overflow-hidden relative group border-2 ${
                     game.session === 'Race' ? 'ring-1 ring-red-500/30 shadow-red-950/30' :
                     game.session === 'Qualifying' ? 'opacity-90 ' : 'opacity-75 '}
                     ${game.sport === 'f1' ? 'border-red-800/50 hover:border-red-700/70' : 
@@ -252,9 +252,9 @@ export function GameSchedule({
                   {/* Efeito de brilho ao hover */}
                   <div className="absolute inset-0 speed-lines opacity-0 group-hover:opacity-100 transition-opacity" />
                   
-                  <CardContent className="relative z-10 p-3 sm:p-5">
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                      <div className="flex min-w-0 flex-1 items-start gap-3 sm:gap-4">
+                  <CardContent className="relative z-10 w-full min-w-0 p-3 sm:p-5">
+                    <div className="grid w-full min-w-0 grid-cols-1 gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+                      <div className="flex w-full min-w-0 items-start gap-3 sm:gap-4">
                         <motion.div 
                           className={`flex size-12 shrink-0 items-center justify-center rounded-xl shadow-xl relative overflow-hidden transition-transform duration-300 sm:size-16 sm:rounded-2xl group-hover:scale-110 ${
                             game.sport === 'f1' ? 'bg-gradient-to-br from-red-500 to-red-700' :
