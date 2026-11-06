@@ -161,6 +161,10 @@
   object-fit: contain;
 }
 
+.live-timing__given {
+  margin-right: 0.35em;
+}
+
 .live-timing__code {
   margin-left: 6px;
   color: #b8b8c2;
@@ -321,9 +325,19 @@
 }
 
 @media (max-width: 760px) {
-  .live-timing__sector-col,
-  .live-timing__code {
+  .live-timing__given,
+  .live-timing__code,
+  .live-timing__sector-col {
     display: none;
+  }
+
+  .live-timing__table th,
+  .live-timing__table td {
+    padding: 10px 6px;
+  }
+
+  .live-timing__driver {
+    gap: 6px;
   }
 
   .live-timing__table th:nth-child(6) {

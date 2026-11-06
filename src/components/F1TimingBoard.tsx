@@ -68,6 +68,14 @@ function earlierSector(laps: LapData[], last: LapData | undefined, key: 'duratio
   return null;
 }
 
+function driverNames(driver: Driver) {
+  const full = (driver.full_name || driver.broadcast_name || '').trim();
+  const parts = full.split(/\s+/).filter(Boolean);
+  const surname = parts.length > 1 ? parts[parts.length - 1] : driver.last_name || full;
+  const given = parts.length > 1 ? parts.slice(0, -1).join(' ') : '';
+  return { given, surname };
+}
+
 function teamLogo(teamName: string) {
   const name = teamName.toLowerCase();
   const id = name.includes('racing bull')
@@ -219,6 +227,7 @@ export function F1TimingBoard({
               {rows.map((row) => {
                 const compound = COMPOUND[row.compound.toUpperCase()];
                 const logo = teamLogo(row.driver.team_name);
+                const name = driverNames(row.driver);
                 return (
                   <tr key={row.driver.driver_number} className={row.sessionFastest ? 'is-fastest' : ''}>
                     <td>
@@ -229,8 +238,9 @@ export function F1TimingBoard({
                     <td>
                       <span className="live-timing__driver">
                         {logo ? <img className="live-timing__logo" src={logo} alt="" /> : null}
-                        <span>
-                          {row.driver.full_name || row.driver.broadcast_name}
+                        <span className="live-timing__name">
+                          {name.given ? <span className="live-timing__given">{name.given}</span> : null}
+                          <span className="live-timing__family">{name.surname}</span>
                           <span className="live-timing__code">{row.driver.name_acronym}</span>
                         </span>
                       </span>
