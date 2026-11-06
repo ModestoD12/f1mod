@@ -1,10 +1,28 @@
 
-  import { defineConfig } from 'vite';
+  import { defineConfig, loadEnv } from 'vite';
   import react from '@vitejs/plugin-react-swc';
+  import basicSsl from '@vitejs/plugin-basic-ssl';
   import path from 'path';
 
-  export default defineConfig({
-    plugins: [react()],
+  export default defineConfig(({ mode }) => {
+    const fileEnv = loadEnv(mode, process.cwd(), '');
+    const googleClientId = process.env.VITE_GOOGLE_CLIENT_ID
+      || process.env.GOOGLE_CLIENT_ID
+      || fileEnv.VITE_GOOGLE_CLIENT_ID
+      || fileEnv.GOOGLE_CLIENT_ID
+      || '';
+
+    return {
+    define: {
+      'import.meta.env.VITE_GOOGLE_CLIENT_ID': JSON.stringify(googleClientId),
+    },
+    plugins: [
+      basicSsl({
+        name: 'e-planner',
+        domains: ['127.0.0.1', 'localhost'],
+      }),
+      react(),
+    ],
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
       alias: {
@@ -56,5 +74,9 @@
     server: {
       port: 3000,
       open: true,
+      proxy: {
+        '/api': 'http://127.0.0.1:3001',
+      },
     },
+  };
   });

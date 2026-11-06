@@ -1,0 +1,216 @@
+.account-menu {
+  z-index: 80;
+  width: min(320px, calc(100vw - 24px));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  background: #121218;
+  padding: 16px;
+  color: #ffffff;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+
+.account-trigger {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: #1a1a22;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.account-trigger span {
+  font-family: Orbitron, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.account-menu__title {
+  margin: 0;
+  font-family: Orbitron, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.account-menu__note,
+.account-menu__error,
+.account-menu__switch {
+  margin: 8px 0 0;
+  color: #b8b8c2;
+  font-family: "Titillium Web", sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.account-menu__error {
+  color: #ff2b2b;
+}
+
+.account-menu__switch {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.account-menu__legal {
+  margin: 12px 0 0;
+  color: #b8b8c2;
+  font-family: "Titillium Web", sans-serif;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.account-menu__legal a {
+  color: #ffffff;
+}
+
+.account-menu__form,
+.account-menu__settings {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.account-menu label {
+  display: grid;
+  gap: 4px;
+  color: #b8b8c2;
+  font-family: "Titillium Web", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.account-menu input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: #1a1a22;
+  color: #ffffff;
+  font-family: "Titillium Web", sans-serif;
+  font-size: 16px;
+  line-height: 20px;
+  padding: 10px 12px;
+}
+
+.account-menu input:focus {
+  border-color: #e10600;
+  outline: none;
+}
+
+.account-menu__submit,
+.account-menu__ghost {
+  min-height: 42px;
+  border-radius: 999px;
+  font-family: "Titillium Web", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.account-menu__submit {
+  border: 0;
+  background: #e10600;
+  color: #ffffff;
+}
+
+.account-menu__submit:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.account-menu__ghost {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: #ffffff;
+}
+
+.account-menu__divider {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0;
+  color: #b8b8c2;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.account-menu__divider::before,
+.account-menu__divider::after {
+  content: "";
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.account-menu__google {
+  display: grid;
+  min-height: 44px;
+  place-items: center;
+}
+
+iframe[src*="accounts.google.com"] {
+  color-scheme: light;
+}
+
+.account-menu__google-fallback {
+  width: 100%;
+}
+
+.account-menu__plan {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: #1a1a22;
+  padding: 10px 12px;
+}
+
+.account-menu__plan strong,
+.account-menu__plan span {
+  display: block;
+  font-family: "Titillium Web", sans-serif;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.account-menu__plan strong {
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.account-menu__plan span {
+  margin-top: 2px;
+  color: #b8b8c2;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.account-menu__renewal {
+  margin: 8px 0 0;
+  font-family: "Titillium Web", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.account-menu__renewal--current {
+  color: #ffffff;
+}
+
+.account-menu__renewal--overdue {
+  color: #ff2b2b;
+}

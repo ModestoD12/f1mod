@@ -2,6 +2,7 @@
 // Documentação: https://openf1.org/
 
 const BASE_URL = 'https://api.openf1.org/v1';
+const LIVE_URL = '/api/live';
 
 export interface Driver {
   driver_number: number;
@@ -148,8 +149,12 @@ function sinceIso(msAgo: number, relativeTo?: string) {
   return new Date(base - msAgo).toISOString().replace(/\.\d{3}Z$/, '+00:00');
 }
 
+function liveRequest(url: string) {
+  return fetch(url, url.startsWith('/') ? { credentials: 'include' } : undefined);
+}
+
 async function fetchJson<T>(url: string, errorMessage: string): Promise<T> {
-  const response = await fetch(url);
+  const response = await liveRequest(url);
   if (response.status === 429) {
     throw new Error('Limite da OpenF1 (30 req/min). Aguarde um instante.');
   }
@@ -176,8 +181,8 @@ export const openF1Api = {
 
   // Buscar sessão mais recente
   async getLatestSession(): Promise<Session | null> {
-    const url = `${BASE_URL}/sessions?session_key=latest`;
-    const response = await fetch(url);
+    const url = `${LIVE_URL}/sessions?session_key=latest`;
+    const response = await liveRequest(url);
     if (!response.ok) throw new Error('Erro ao buscar sessão');
     const data = await response.json();
     return data[0] || null;
@@ -201,8 +206,8 @@ export const openF1Api = {
     if (params?.session_key) queryParams.append('session_key', params.session_key.toString());
     if (params?.driver_number) queryParams.append('driver_number', params.driver_number.toString());
     
-    const url = `${BASE_URL}/drivers${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
-    const response = await fetch(url);
+    const url = `${LIVE_URL}/drivers${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+    const response = await liveRequest(url);
     if (!response.ok) throw new Error('Erro ao buscar pilotos');
     return response.json();
   },
@@ -213,8 +218,8 @@ export const openF1Api = {
     queryParams.append('session_key', params.session_key.toString());
     if (params.driver_number) queryParams.append('driver_number', params.driver_number.toString());
     
-    const url = `${BASE_URL}/position?${queryParams.toString()}`;
-    const response = await fetch(url);
+    const url = `${LIVE_URL}/position?${queryParams.toString()}`;
+    const response = await liveRequest(url);
     if (!response.ok) throw new Error('Erro ao buscar posições');
     return response.json();
   },
@@ -225,12 +230,12 @@ export const openF1Api = {
     queryParams.append('session_key', params.session_key.toString());
     if (params.driver_number) queryParams.append('driver_number', params.driver_number.toString());
     if (params.lap_number) queryParams.append('lap_number', params.lap_number.toString());
-    const url = `${BASE_URL}/laps?${queryParams.toString()}`;
+    const url = `${LIVE_URL}/laps?${queryParams.toString()}`;
     return fetchJson<LapData[]>(url, 'Erro ao buscar voltas');
   },
 
   async getStints(sessionKey: number | string): Promise<Stint[]> {
-    const url = `${BASE_URL}/stints?session_key=${sessionKey}`;
+    const url = `${LIVE_URL}/stints?session_key=${sessionKey}`;
     return fetchJson<Stint[]>(url, 'Erro ao buscar pneus');
   },
 
@@ -303,7 +308,7 @@ export const openF1Api = {
 
   async getLatestPositions(sessionKey: number | string, relativeTo?: string): Promise<Position[]> {
     const since = encodeURIComponent(sinceIso(90_000, relativeTo));
-    const url = `${BASE_URL}/position?session_key=${sessionKey}&date>=${since}`;
+    const url = `${LIVE_URL}/position?session_key=${sessionKey}&date>=${since}`;
     const points = await fetchJson<Position[]>(url, 'Erro ao buscar posições');
     return points.reduce((acc: Position[], point) => {
       const existing = acc.find((item) => item.driver_number === point.driver_number);

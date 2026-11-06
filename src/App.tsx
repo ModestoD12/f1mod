@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from './components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
-import { Avatar, AvatarFallback } from './components/ui/avatar';
-import { Trophy, User, Calendar, Table, Zap, Lock } from 'lucide-react';
+import { Trophy, Calendar, Table, Zap, Lock } from 'lucide-react';
+import { AccountMenu } from './components/AccountMenu';
 import { Toaster } from './components/ui/sonner';
-import { SportHighlights } from './components/SportHighlights';
 import { GameSchedule } from './components/GameSchedule';
 import { LeagueTable } from './components/LeagueTable';
 import { OpenF1Dashboard } from './components/OpenF1Dashboard';
 import { F1CalendarWrapper } from './components/F1CalendarWrapper';
-import { motion } from 'motion/react';
 import { f1Drivers, f1Teams, f1Schedule2025, f1DriversStandings, f1ConstructorsStandings } from './data/f1Data';
 import { nbaTeams, nbaSchedule2025, nbaStandings } from './data/nbaData';
 import { nflTeams, nflSchedule2025, nflStandings } from './data/nflData';
@@ -235,129 +233,40 @@ export default function App() {
   // Filtrar jogos pelo esporte ativo
   const filteredGames = allGames.filter(game => game.sport === activeSport);
 
-  const getSportGradient = (sportId: string) => {
-    const gradients = {
-      f1: 'from-red-600 to-red-700',
-      nba: 'from-blue-600 to-blue-700',
-      nfl: 'from-purple-600 to-purple-700',
-    };
-    return gradients[sportId as keyof typeof gradients] || 'from-gray-600 to-gray-700';
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 hex-pattern bg-[rgba(18,18,18,0.98)]">
+    <div className="prndl min-h-screen bg-[#0b0b0f]">
       <Toaster position="top-right" />
       
       {/* Header Esportivo Super Dinâmico */}
-      <header className="relative bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-b-4 border-transparent sticky top-0 z-50 overflow-hidden"
-        style={{
-          borderBottomColor: activeSport === 'f1' ? '#DC2626' : activeSport === 'nba' ? '#2563EB' : '#7C3AED'
-        }}
-      >
-        {/* Background animado com padrão esportivo */}
-        <div className="absolute inset-0 sport-stripes opacity-20" />
-        <div className="absolute inset-0 speed-lines opacity-30" />
-        
-        {/* Brilho de fundo animado */}
-        <motion.div 
-          className={`absolute inset-0 bg-gradient-to-r ${getSportGradient(activeSport)} opacity-10`}
-          animate={{
-            opacity: [0.05, 0.15, 0.05],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-
-        <div className="container mx-auto px-6 py-5 relative z-10">
-          <div className="flex items-center justify-between">
-            {/* Logo e Título */}
-            <motion.div 
-              className="flex items-center gap-4"
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="relative">
-                {/* Círculos de fundo pulsantes */}
-                <motion.div 
-                  className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${getSportGradient(activeSport)} blur-xl`}
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.5, 0.8, 0.5],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                />
-                <div className={`relative p-3 rounded-2xl bg-gradient-to-br ${getSportGradient(activeSport)} shadow-2xl`}>
-                  <Trophy className="h-8 w-8 text-white" />
-                </div>
-              </div>
-              <div>
-                <h1 className="text-3xl text-white sport-text-shadow tracking-tight">
-                  SPORTCENTER
-                </h1>
-                <div className="flex items-center gap-2 mt-1">
-                  <motion.div
-                    className="flex items-center gap-1.5"
-                    animate={{ opacity: [0.5, 1, 0.5] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    <div className="h-1.5 w-1.5 rounded-full bg-red-500" />
-                    <span className="text-xs text-red-400 uppercase tracking-wider">F1</span>
-                  </motion.div>
-                  <span className="text-gray-600">•</span>
-                  <span className="text-xs text-slate-500 uppercase tracking-wider">NBA em breve</span>
-                  <span className="text-gray-600">•</span>
-                  <span className="text-xs text-slate-500 uppercase tracking-wider">NFL em breve</span>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Estatísticas Rápidas / Badge */}
-            <div className="flex items-center gap-4">
-              <motion.div 
-                className="hidden md:flex items-center gap-3 px-5 py-2.5 bg-gradient-to-r from-amber-500/20 to-amber-600/20 rounded-xl border-2 border-amber-500/30 backdrop-blur-sm"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                <Zap className="h-5 w-5 text-amber-400" />
-                <div className="flex flex-col">
-                  <span className="text-xs text-amber-200/70 uppercase tracking-wider">Temporada</span>
-                  <span className="text-sm text-amber-300 font-bold">{new Date().getFullYear()}</span>
-                </div>
-              </motion.div>
-              
-              <Avatar className="h-12 w-12 ring-4 ring-white/10 shadow-xl">
-                <AvatarFallback className="bg-gradient-to-br from-slate-700 to-slate-800 text-white">
-                  <User className="h-6 w-6" />
-                </AvatarFallback>
-              </Avatar>
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0b0b0f]">
+        <div className="container mx-auto flex items-center justify-between px-4 py-4 sm:px-6">
+          <div className="flex items-center gap-4">
+            <div className="prndl-mark">
+              <Trophy className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl text-white sm:text-2xl">Sportcenter</h1>
+              <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.16em] text-[#b8b8c2]">
+                F1 · NBA em breve · NFL em breve
+              </p>
             </div>
           </div>
+          <div className="flex items-center gap-3">
+            <div className="prndl-season">
+              <Zap className="h-4 w-4 text-[#ff2b2b]" />
+              <span>{new Date().getFullYear()}</span>
+            </div>
+            <AccountMenu />
+          </div>
         </div>
-
-        {/* Barra de progresso animada */}
-        <motion.div 
-          className={`absolute bottom-0 left-0 h-1 bg-gradient-to-r ${getSportGradient(activeSport)}`}
-          initial={{ width: "0%" }}
-          animate={{ width: "100%" }}
-          transition={{ duration: 1, ease: "easeOut" }}
-        />
       </header>
 
       <div className="container mx-auto px-3 py-4 sm:px-6 sm:py-6">
         <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-5 md:gap-6">
           {/* Conteúdo principal */}
           <div className="md:col-span-5">
-            <Card className="bg-slate-900 border-slate-700">
-              <CardContent className="p-0 bg-gradient-to-br from-slate-900 to-slate-850">
+            <Card className="border-white/10 bg-[#121218]">
+              <CardContent className="bg-[#121218] p-0">
                 {/* Abas dos esportes */}
                 <Tabs
                   value={activeSport}
@@ -367,75 +276,48 @@ export default function App() {
                   }}
                   className="w-full"
                 >
-                  <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b border-slate-700">
+                  <div className="border-b border-white/10 bg-[#0b0b0f]">
                     <TabsList className="w-full justify-start rounded-none bg-transparent p-0 h-auto">
-                      {availableSports.map((sport) => {
-                        const isActive = activeSport === sport.id;
-                        const gradientClass = getSportGradient(sport.id);
-                        return (
+                      {availableSports.map((sport) => (
                           <TabsTrigger 
                             key={sport.id}
                             value={sport.id}
                             disabled={!sport.enabled}
                             title={!sport.enabled ? 'Em breve' : undefined}
-                            className={`relative flex min-w-0 items-center gap-2 overflow-hidden rounded-none border-b-4 border-transparent px-3 py-3 transition-all duration-300 data-[state=active]:text-white sm:px-6 sm:py-4 ${
+                            className={`relative flex min-w-0 items-center gap-2 rounded-none border-b-2 border-transparent px-4 py-4 text-[#b8b8c2] data-[state=active]:text-white ${
                                 sport.enabled
-                                  ? 'text-slate-400 hover:text-slate-200'
-                                  : 'text-slate-600 cursor-not-allowed opacity-50'
-                            } ${isActive ? 'border-b-4' : ''}`}
-                            style={{
-                              borderBottomColor: isActive 
-                                ? sport.id === 'f1' ? '#DC2626' 
-                                : sport.id === 'nba' ? '#2563EB' 
-                                : '#7C3AED'
-                                : 'transparent'
-                            }}
+                                  ? 'hover:text-white'
+                                  : 'cursor-not-allowed text-[#6d6d78] opacity-50'
+                            }`}
                           >
-                            {isActive && (
-                              <motion.div 
-                                className={`absolute inset-0 bg-gradient-to-r ${gradientClass} opacity-20`}
-                                layoutId="activeTab"
-                                transition={{ duration: 0.3 }}
-                              />
-                            )}
-                            <span className={`text-2xl relative z-10 ${!sport.enabled ? 'grayscale' : ''}`}>{sport.icon}</span>
-                            <span className="hidden sm:inline font-medium relative z-10">{sport.name}</span>
+                            <span className={`relative z-10 text-xl ${!sport.enabled ? 'grayscale' : ''}`}>{sport.icon}</span>
+                            <span className="relative z-10 hidden font-bold sm:inline">{sport.name}</span>
                             {!sport.enabled && (
-                              <span className="relative z-10 hidden md:inline-flex items-center gap-1 text-[10px] uppercase tracking-wider text-slate-500">
+                              <span className="relative z-10 hidden items-center gap-1 text-[10px] uppercase tracking-wider text-[#6d6d78] md:inline-flex">
                                 <Lock className="h-3 w-3" />
                                 Em breve
                               </span>
                             )}
                           </TabsTrigger>
-                        );
-                      })}
+                      ))}
                     </TabsList>
                   </div>
 
                   {/* Abas de conteúdo (Programação/Tabela) */}
-                  <div className="border-b border-slate-700">
+                  <div className="border-b border-white/10">
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                      <TabsList className="w-full justify-start rounded-none bg-slate-900/50 p-0 border-b border-slate-800">
-                        <TabsTrigger 
-                          value="schedule" 
-                          className="min-w-0 rounded-none border-b-2 border-transparent px-3 text-sm data-[state=active]:border-blue-500 data-[state=active]:bg-slate-800/50 data-[state=active]:text-white text-slate-400 hover:text-slate-200 sm:px-4 sm:text-base"
-                        >
-                          <Calendar className="h-4 w-4 mr-2" />
+                      <TabsList className="prndl-section-nav" aria-label="Seções do campeonato">
+                        <TabsTrigger value="schedule">
+                          <Calendar className="h-4 w-4" />
                           Programação
                         </TabsTrigger>
-                        <TabsTrigger 
-                          value="tables"
-                          className="rounded-none border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-slate-800/50 text-slate-400 data-[state=active]:text-white hover:text-slate-200"
-                        >
-                          <Table className="h-4 w-4 mr-2" />
+                        <TabsTrigger value="tables">
+                          <Table className="h-4 w-4" />
                           Tabela
                         </TabsTrigger>
                         {activeSport === 'f1' && (
-                          <TabsTrigger 
-                            value="livedata"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-red-500 data-[state=active]:bg-slate-800/50 text-slate-400 data-[state=active]:text-white hover:text-slate-200"
-                          >
-                            <Zap className="h-4 w-4 mr-2" />
+                          <TabsTrigger value="livedata">
+                            <Zap className="h-4 w-4" />
                             Live Data
                           </TabsTrigger>
                         )}
@@ -479,10 +361,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* Destaques e notícias no rodapé */}
-        <div className="mt-6 border-t border-slate-800 pt-6">
-          <SportHighlights />
-        </div>
       </div>
     </div>
   );

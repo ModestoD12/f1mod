@@ -1,0 +1,332 @@
+.live-timing {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  background:
+    radial-gradient(120% 80% at 100% 0%, rgba(225, 6, 0, 0.16), transparent 46%),
+    #121218;
+  color: #ffffff;
+}
+
+.live-timing__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 16px 0;
+}
+
+.live-timing h2 {
+  margin: 0;
+  font-family: Orbitron, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.live-timing__meta {
+  margin: 6px 0 0;
+  color: #b8b8c2;
+  font-family: "Titillium Web", sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.live-timing__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  margin-top: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: #1a1a22;
+  padding: 0 12px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.live-timing__status i {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #6d6d78;
+}
+
+.live-timing__status.is-live i {
+  background: #e10600;
+}
+
+.live-timing__icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: transparent;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.live-timing__icon-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.live-timing__table-wrap {
+  margin: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+}
+
+.live-timing__table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: "Titillium Web", sans-serif;
+}
+
+.live-timing__table th {
+  position: sticky;
+  top: 77px;
+  z-index: 4;
+  padding: 12px 10px;
+  color: #b8b8c2;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 14px;
+  text-align: left;
+  text-transform: uppercase;
+  background: #0b0b0f;
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+  white-space: nowrap;
+}
+
+.live-timing__table th:first-child {
+  border-top-left-radius: 13px;
+}
+
+.live-timing__table th:last-child {
+  border-top-right-radius: 13px;
+}
+
+.live-timing__table td {
+  padding: 12px 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 20px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.live-timing__table tbody tr.is-fastest td {
+  background: linear-gradient(90deg, rgba(196, 92, 255, 0.16), transparent 42%);
+}
+
+.live-timing__pos {
+  display: inline-grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 8px;
+  background: #1a1a22;
+  font-family: Orbitron, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.live-timing__pos.is-leader {
+  background: #e10600;
+}
+
+.live-timing__driver {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+}
+
+.live-timing__logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.live-timing__code {
+  margin-left: 6px;
+  color: #b8b8c2;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+.live-timing__tyre {
+  display: inline-grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 999px;
+  color: #0b0b0f;
+  font-family: Orbitron, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.live-timing__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.live-timing__time,
+.live-timing__delta {
+  font-family: Orbitron, sans-serif;
+  letter-spacing: 0.03em;
+}
+
+.live-timing__time {
+  font-size: 13px;
+}
+
+.live-timing__delta {
+  font-size: 11px;
+}
+
+.is-purple {
+  color: #c45cff;
+}
+
+.is-green {
+  color: #39e36a;
+}
+
+.is-yellow {
+  color: #f5d000;
+}
+
+.live-timing__table td.is-purple {
+  color: #c45cff;
+}
+
+.live-timing__table td.is-green {
+  color: #39e36a;
+}
+
+.live-timing__table td.is-yellow {
+  color: #f5d000;
+}
+
+.live-timing__sectors {
+  display: flex;
+  gap: 6px;
+}
+
+.live-timing__sectors span {
+  font-family: Orbitron, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+
+.live-timing__empty,
+.live-timing__loading {
+  padding: 48px 16px;
+  color: #b8b8c2;
+  text-align: center;
+}
+
+.live-timing__preview {
+  margin: 0 0 10px;
+  color: #b8b8c2;
+  font-family: "Titillium Web", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.live-timing__login {
+  max-width: 420px;
+  margin: 12px auto;
+  padding: 28px 24px 24px;
+}
+
+.live-timing__login .account-menu__form {
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.live-timing__login label {
+  display: grid;
+  gap: 6px;
+  color: #b8b8c2;
+  font-family: "Titillium Web", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.live-timing__login input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  background: #1a1a22;
+  color: #ffffff;
+  font-family: "Titillium Web", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: 0;
+  text-transform: none;
+  padding: 12px 14px;
+}
+
+.live-timing__login input::placeholder {
+  color: #6d6d78;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.live-timing__login input:focus {
+  border-color: #e10600;
+  outline: none;
+}
+
+.live-timing__login .account-menu__submit {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 4px;
+}
+
+.live-timing__login .account-menu__switch {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  text-align: center;
+}
+
+.live-timing__login .account-menu__legal {
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .live-timing__sector-col,
+  .live-timing__code {
+    display: none;
+  }
+
+  .live-timing__table th:nth-child(6) {
+    border-top-right-radius: 13px;
+  }
+}

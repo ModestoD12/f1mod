@@ -123,18 +123,10 @@ export function SportHighlights() {
     <div className="space-y-4">
       {/* Jogos em Destaque - Super Vibrante */}
       <Card className="overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 border-2 border-slate-800 shadow-2xl">
-        <CardHeader className="pb-3 bg-gradient-to-r from-red-600/20 via-blue-600/20 to-purple-600/20 border-b border-slate-800">
+        <CardHeader className="border-b border-white/10 pb-3">
           <CardTitle className="flex items-center gap-2 text-base text-white">
-            <motion.div
-              animate={{ 
-                scale: [1, 1.2, 1],
-                filter: ["brightness(1)", "brightness(1.5)", "brightness(1)"]
-              }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <Flame className="h-5 w-5 text-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
-            </motion.div>
-            Em Alta
+            <Flame className="h-5 w-5 text-[#e10600]" />
+            Em alta
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 pt-4">
@@ -227,10 +219,10 @@ export function SportHighlights() {
 
       {/* Notícias - Estilo Esportivo */}
       <Card className="overflow-hidden bg-gradient-to-br from-slate-950 to-slate-900 border-2 border-slate-800 shadow-2xl">
-        <CardHeader className="pb-3 bg-gradient-to-r from-amber-600/20 via-orange-600/20 to-red-600/20 border-b border-slate-800">
+        <CardHeader className="border-b border-white/10 pb-3">
           <CardTitle className="flex items-center gap-2 text-base text-white">
-            <Zap className="h-5 w-5 text-amber-500" />
-            Últimas Notícias
+            <Zap className="h-5 w-5 text-[#e10600]" />
+            Últimas notícias
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 pt-4">

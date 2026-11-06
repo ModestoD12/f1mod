@@ -119,6 +119,21 @@ const teamShortNames: Record<string, string> = {
   'cadillac': 'Cadillac',
 };
 
+const teamLogos: Record<string, string> = {
+  'mclaren': '/teams/mclaren.svg',
+  'ferrari': '/teams/ferrari.svg',
+  'red_bull': '/teams/red_bull.svg',
+  'mercedes': '/teams/mercedes.svg',
+  'aston_martin': '/teams/aston_martin.svg',
+  'alpine': '/teams/alpine.svg',
+  'haas': '/teams/haas.svg',
+  'rb': '/teams/rb.svg',
+  'racing_bulls': '/teams/rb.svg',
+  'williams': '/teams/williams.svg',
+  'audi': '/teams/audi.svg',
+  'cadillac': '/teams/cadillac.svg',
+};
+
 // Bandeiras das equipes por nacionalidade
 const teamNationalityFlags: Record<string, string> = {
   'British': '🇬🇧',
@@ -219,6 +234,11 @@ export const f1StandingsApi = {
   getTeamColor(constructorId: string): string {
     const id = constructorId.toLowerCase().replace(/ /g, '_');
     return teamColors[id] || '#666666';
+  },
+
+  getTeamLogo(constructorId: string): string | null {
+    const id = constructorId.toLowerCase().replace(/ /g, '_');
+    return teamLogos[id] || null;
   },
 
   getTeamShortName(constructorId: string): string {

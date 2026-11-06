@@ -18,6 +18,7 @@ import { motion } from "motion/react";
 import { getStreamingOptions } from "../services/streamingService";
 import { CountryFlag } from "./CountryFlag";
 import { CircuitMap } from "./CircuitMap";
+import { WeekendBoard } from "./WeekendBoard";
 
 interface Game {
   id: string | number;
@@ -140,20 +141,36 @@ const getGameStreamingOptions = (game: Game) => {
       .map((option) => `${option.name}: ${option.url}`)
       .join('\n');
 
-    const title = encodeURIComponent(game.title);
-    const description = encodeURIComponent(
-      [
-        game.description || '',
-        watchLinks ? `Onde assistir:\n${watchLinks}` : '',
-        game.location ? `Local: ${game.location}` : '',
-      ].filter(Boolean).join('\n\n')
-    );
-    const location = encodeURIComponent(game.location || game.circuit || '');
+    const details = [
+      game.description || '',
+      watchLinks ? `Onde assistir:\n${watchLinks}` : '',
+      game.location ? `Local: ${game.location}` : '',
+    ].filter(Boolean).join('\n\n');
     const dates = `${formatDateForGoogle(startUtc)}/${formatDateForGoogle(endUtc)}`;
+    const params = new URLSearchParams({
+      text: game.title,
+      dates,
+      details,
+      location: game.location || game.circuit || '',
+      ctz: 'America/Sao_Paulo',
+    });
 
-    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${description}&location=${location}&ctz=America/Sao_Paulo`;
+    const desktopUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&${params}`;
+    const mobileUrl = `https://calendar.google.com/calendar/u/0/r/eventedit?${params}`;
+    const ua = navigator.userAgent;
+    const isAndroid = /Android/i.test(ua);
+    const isAppleMobile = /iPhone|iPad|iPod/i.test(ua)
+      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-    window.open(googleCalendarUrl, '_blank');
+    if (isAndroid) {
+      const fallback = encodeURIComponent(mobileUrl);
+      const path = desktopUrl.replace(/^https:\/\//, '');
+      window.location.assign(`intent://${path}#Intent;scheme=https;package=com.google.android.calendar;S.browser_fallback_url=${fallback};end`);
+    } else if (isAppleMobile) {
+      window.location.assign(mobileUrl);
+    } else {
+      window.open(desktopUrl, '_blank', 'noopener,noreferrer');
+    }
 
     toast.success('Abrindo Google Calendar', {
       description: 'Salve o evento. Os links da transmissão estão na descrição.',
@@ -182,22 +199,15 @@ const getGameStreamingOptions = (game: Game) => {
   // Todas as sessões ficam na mesma aba; a hierarquia visual diferencia cada tipo.
   const visibleGames = scheduledGames;
 
+  const weekendBoard = showAll && filteredGames.some((game) => game.sport === "f1");
+
   return (
     <div className="flex w-full min-w-0 flex-col gap-6">
-      {showAll && (
-        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-700/80 bg-slate-950/80 px-4 py-3 shadow-xl shadow-black/20">
-          <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-200">Fim de semana de corrida</span>
-          <span className="h-2 w-2 rounded-full bg-red-500" />
-          <span className="text-xs font-semibold text-slate-300">Corridas em destaque</span>
-          <span className="h-2 w-2 rounded-full bg-amber-400" />
-          <span className="text-xs font-semibold text-slate-300">Classificação</span>
-          <span className="h-2 w-2 rounded-full bg-slate-500" />
-          <span className="text-xs font-semibold text-slate-300">Treinos reunidos</span>
-        </div>
+      {weekendBoard && (
+        <WeekendBoard sessions={filteredGames} onReminder={handleReminder} />
       )}
 
-      {/* Jogos ao vivo em destaque */}
-      {liveGames.length > 0 && (
+      {!weekendBoard && liveGames.length > 0 && (
         <div className="space-y-3">
           <h3 className="flex items-center gap-2 text-red-400 font-bold text-lg">
             <div className="h-2 w-2 bg-red-500 rounded-full animate-pulse" />
@@ -218,7 +228,7 @@ const getGameStreamingOptions = (game: Game) => {
       )}
 
       {/* Jogos agendados */}
-      {scheduledGames.length > 0 && (
+      {scheduledGames.length > 0 && !weekendBoard && (
         <div className="space-y-3">
           {liveGames.length > 0 && (
             <h3 className="flex items-center gap-2 text-slate-300 font-bold text-lg">
