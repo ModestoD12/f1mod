@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useF1Calendar } from '../hooks/useF1Calendar';
 import { GameSchedule } from './GameSchedule';
 import { CountryFlag } from './CountryFlag';
@@ -28,16 +28,24 @@ function fromDateKey(key: string) {
   return new Date(year, month - 1, day);
 }
 
-function formatWeekend(start: string, end: string) {
-  const first = fromDateKey(start);
-  const last = fromDateKey(end);
-  if (start === end) {
-    return first.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+function formatDayMonth(date: string, timeUtc?: string) {
+  const match = date.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!match) return '';
+
+  let year = Number(match[1]);
+  let month = Number(match[2]);
+  let day = Number(match[3]);
+  const utcHours = timeUtc ? parseInt(timeUtc.replace('Z', '').split(':')[0], 10) : NaN;
+
+  if (!Number.isNaN(utcHours) && utcHours - 3 < 0) {
+    const shifted = new Date(Date.UTC(year, month - 1, day));
+    shifted.setUTCDate(shifted.getUTCDate() - 1);
+    year = shifted.getUTCFullYear();
+    month = shifted.getUTCMonth() + 1;
+    day = shifted.getUTCDate();
   }
-  if (first.getMonth() === last.getMonth()) {
-    return `${first.getDate()} a ${last.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}`;
-  }
-  return `${first.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })} – ${last.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}`;
+
+  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}`;
 }
 
 interface Weekend {
@@ -48,11 +56,55 @@ interface Weekend {
   race: CalendarEvent;
 }
 
+const SESSION_MINUTES: Record<string, number> = {
+  FP1: 60,
+  FP2: 60,
+  FP3: 60,
+  Qualifying: 60,
+  'Sprint Qualifying': 45,
+  'Sprint Shootout': 45,
+  Sprint: 45,
+  Race: 150,
+};
+
+function sessionEndMs(event: CalendarEvent) {
+  if (!event.date) return null;
+  let start: number | null = null;
+  if (event.timeUtc) {
+    const clock = event.timeUtc.replace('Z', '').slice(0, 8);
+    const parsed = Date.parse(`${event.date}T${clock}Z`);
+    start = Number.isNaN(parsed) ? null : parsed;
+  } else if (event.time) {
+    const [hours, minutes] = event.time.split(':').map(Number);
+    const parsed = Date.parse(`${event.date}T00:00:00Z`);
+    if (!Number.isNaN(hours) && !Number.isNaN(parsed)) {
+      start = parsed + ((hours + 3) * 60 + (minutes || 0)) * 60 * 1000;
+    }
+  }
+  if (start == null) return null;
+  const minutes = SESSION_MINUTES[event.session || ''] ?? 60;
+  return start + minutes * 60 * 1000;
+}
+
+function pickActiveWeekend(weekends: Weekend[], now: number) {
+  return weekends.find((weekend) => weekend.events.some((event) => {
+    const end = sessionEndMs(event);
+    return end != null && now < end;
+  })) || weekends[weekends.length - 1];
+}
+
 export function F1CalendarWrapper({
   currentDate,
   onDateSelect,
 }: F1CalendarWrapperProps) {
   const { events, seasonYear, loading, error, refetch } = useF1Calendar('current');
+  const [now, setNow] = useState(() => Date.now());
+  const userPicked = useRef(false);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 30000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   const weekends = useMemo<Weekend[]>(() => {
     const grouped = new Map<number, CalendarEvent[]>();
@@ -71,17 +123,11 @@ export function F1CalendarWrapper({
   }, [events]);
 
   useEffect(() => {
-    if (!weekends.length) return;
+    if (!weekends.length || userPicked.current) return;
+    const active = pickActiveWeekend(weekends, now);
     const key = toDateKey(currentDate);
-    const current = weekends.find((weekend) => key >= weekend.start && key <= weekend.end);
-    if (current) {
-      if (key !== current.race.date) onDateSelect(fromDateKey(current.race.date));
-      return;
-    }
-    const today = toDateKey(new Date());
-    const next = weekends.find((weekend) => weekend.end >= today) || weekends[weekends.length - 1];
-    if (key !== next.race.date) onDateSelect(fromDateKey(next.race.date));
-  }, [weekends, currentDate, onDateSelect]);
+    if (key !== active.race.date) onDateSelect(fromDateKey(active.race.date));
+  }, [weekends, currentDate, onDateSelect, now]);
 
   const currentKey = toDateKey(currentDate);
   const currentIndex = weekends.findIndex((weekend) => currentKey >= weekend.start && currentKey <= weekend.end);
@@ -89,6 +135,7 @@ export function F1CalendarWrapper({
 
   const jumpToWeekend = (direction: 1 | -1) => {
     if (!weekends.length) return;
+    userPicked.current = true;
     const nextIndex = currentIndex === -1
       ? (direction === 1 ? 0 : weekends.length - 1)
       : currentIndex + direction;
@@ -126,60 +173,74 @@ export function F1CalendarWrapper({
     );
   }
 
+  const previous = currentIndex > 0 ? weekends[currentIndex - 1] : undefined;
+  const next = currentIndex >= 0 && currentIndex < weekends.length - 1 ? weekends[currentIndex + 1] : undefined;
+  const shortName = (title?: string) => (title || 'Etapa').replace(/\s+Grand Prix$/i, '');
+
   return (
     <div className="flex w-full min-w-0 flex-col gap-4">
-      <div className="flex w-full min-w-0 items-center justify-between gap-2 rounded-lg border border-slate-500 bg-slate-800 p-2 sm:gap-4 sm:p-3">
+      <nav className="prndl-nav" aria-label="Navegação entre Grandes Prêmios">
         <Button
-          variant="outline"
-          size="icon"
-          aria-label="Ver Grande Prêmio anterior"
+          type="button"
+          aria-label={previous ? `Grande Prêmio anterior: ${previous.race.title}` : 'Não há Grande Prêmio anterior'}
           onClick={() => jumpToWeekend(-1)}
-          disabled={currentIndex <= 0}
-          className="size-11 shrink-0 border-slate-400 bg-slate-700 text-white shadow-lg shadow-black/20 hover:bg-red-600 hover:text-white disabled:opacity-35"
+          disabled={!previous}
+          className="prndl-nav__step"
         >
-          <ChevronLeft className="size-6" />
+          <ChevronLeft className="size-5 shrink-0" />
+          <span>
+            <small>Anterior</small>
+            <strong>
+              {previous?.race.country ? (
+                <CountryFlag nationality={previous.race.country} size="lg" className="prndl-nav__flag" />
+              ) : (
+                'Início'
+              )}
+            </strong>
+          </span>
         </Button>
 
-        <div className="flex min-w-0 items-center justify-center gap-3 text-center">
-          {weekend?.race.country && (
-            <CountryFlag nationality={weekend.race.country} size="md" />
-          )}
-          <span className="truncate text-base font-black tracking-tight text-white sm:text-lg">
-            {weekend?.race.title || 'Calendário'}
-          </span>
+        <div className="prndl-nav__current">
+          <small>Etapa {weekend ? `${currentIndex + 1} de ${weekends.length}` : '—'}</small>
+          <strong>
+            {weekend?.race.country && <CountryFlag nationality={weekend.race.country} size="sm" />}
+            {shortName(weekend?.race.title)}
+          </strong>
         </div>
 
         <Button
-          variant="outline"
-          size="icon"
-          aria-label="Ver próximo Grande Prêmio"
+          type="button"
+          aria-label={next ? `Próximo Grande Prêmio: ${next.race.title}` : 'Não há próximo Grande Prêmio'}
           onClick={() => jumpToWeekend(1)}
-          disabled={currentIndex === -1 || currentIndex >= weekends.length - 1}
-          className="size-11 shrink-0 border-slate-400 bg-slate-700 text-white shadow-lg shadow-black/20 hover:bg-red-600 hover:text-white disabled:opacity-35"
+          disabled={!next}
+          className="prndl-nav__step prndl-nav__step--next"
         >
-          <ChevronRight className="size-6" />
+          <span>
+            <small>Próximo</small>
+            <strong>
+              {next?.race.country ? (
+                <CountryFlag nationality={next.race.country} size="lg" className="prndl-nav__flag" />
+              ) : (
+                'Fim'
+              )}
+            </strong>
+          </span>
+          <ChevronRight className="size-5 shrink-0" />
         </Button>
-      </div>
+      </nav>
 
       {weekend && (
         <>
-          <div className="relative overflow-hidden rounded-2xl border border-red-700/50 bg-gradient-to-br from-red-950/70 via-slate-900 to-slate-950 p-5 shadow-xl shadow-red-950/20">
-            <div className="absolute inset-y-0 left-0 w-1.5 bg-red-600" />
-            <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.22em] text-red-300">Round {weekend.round} · Grande Prêmio</p>
-                <h2 className="text-2xl font-black tracking-tight text-white sm:text-3xl">{weekend.race.title}</h2>
-                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-300">
-                  {weekend.race.country && <CountryFlag nationality={weekend.race.country} size="md" />}
-                  <span className="font-semibold text-slate-100">{weekend.race.country || 'Calendário internacional'}</span>
-                  {weekend.race.location && <><span className="text-slate-600">•</span><span>{weekend.race.location}</span></>}
-                </div>
-              </div>
-              <div className="flex flex-1 flex-col justify-between gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-left backdrop-blur-sm sm:min-w-[190px]">
-                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-red-200">Data e Hora</p>
-                <p className="text-lg font-bold capitalize leading-tight text-white">{formatWeekend(weekend.race.date, weekend.race.date)}</p>
-                <p className="text-3xl font-black leading-none text-white">{weekend.race.time || '—'}</p>
-              </div>
+          <div className="prndl-hero">
+            <div className="prndl-hero__kicker">
+              <p className="prndl-kicker">Round {weekend.round} · Grande Prêmio</p>
+              <p className="prndl-hero__date">{formatDayMonth(weekend.race.date, weekend.race.timeUtc)}</p>
+            </div>
+            <h2 className="text-2xl text-white sm:text-3xl">{weekend.race.title}</h2>
+            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[#b8b8c2]">
+              {weekend.race.country && <CountryFlag nationality={weekend.race.country} size="md" />}
+              <span className="font-semibold text-white">{weekend.race.country || 'Calendário internacional'}</span>
+              {weekend.race.location && <><span className="text-white/30">•</span><span>{weekend.race.location}</span></>}
             </div>
           </div>
           <GameSchedule games={weekend.events} sports={sports} currentDate={currentDate} showAll />

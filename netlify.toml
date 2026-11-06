@@ -1,3 +1,13 @@
 [build]
   command = "npm run build"
   publish = "build"
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["mongodb", "express", "bcryptjs", "google-auth-library", "serverless-http"]
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true

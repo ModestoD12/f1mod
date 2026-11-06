@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { CloudSun, Droplets, Thermometer, Wind } from 'lucide-react';
+import { Droplets, Thermometer, Wind } from 'lucide-react';
 import { getRaceWeather, RaceWeather } from '../services/weatherService';
+import { CircuitFacts, formatCircuitLength, getCircuitFacts } from '../services/f1CircuitService';
+import './circuit-card.css';
 
 const CIRCUITS: Record<string, { key: number; year: number }> = {
   albert_park: { key: 10, year: 2022 },
@@ -55,13 +57,15 @@ interface CircuitMapProps {
   longitude?: number;
   date?: string;
   timeUtc?: string;
+  variant?: 'card' | 'tile';
 }
 
-export function CircuitMap({ circuitId, circuitName, weather, latitude, longitude, date, timeUtc }: CircuitMapProps) {
+export function CircuitMap({ circuitId, circuitName, weather, latitude, longitude, date, timeUtc, variant = 'card' }: CircuitMapProps) {
   const [path, setPath] = useState<string | null>(circuitId ? pathCache.get(circuitId) || null : null);
   const [missing, setMissing] = useState(false);
   const [forecast, setForecast] = useState<RaceWeather | null>(null);
   const [forecastNote, setForecastNote] = useState<string | null>(null);
+  const [facts, setFacts] = useState<CircuitFacts | null>(null);
 
   useEffect(() => {
     const meta = circuitId ? CIRCUITS[circuitId] : undefined;
@@ -79,6 +83,7 @@ export function CircuitMap({ circuitId, circuitName, weather, latitude, longitud
 
     let cancelled = false;
     setMissing(false);
+    setPath(circuitId ? pathCache.get(circuitId) || null : null);
     fetch(`https://api.multiviewer.app/api/v1/circuits/${meta.key}/${meta.year}`)
       .then((response) => {
         if (!response.ok) throw new Error('sem traçado');
@@ -124,49 +129,118 @@ export function CircuitMap({ circuitId, circuitName, weather, latitude, longitud
     };
   }, [latitude, longitude, date, timeUtc]);
 
-  const summary = forecast?.summary || forecastNote || weather || 'Condições variáveis';
+  useEffect(() => {
+    if (!circuitId) {
+      setFacts(null);
+      return;
+    }
 
-  return (
-    <div className="rounded-2xl border border-slate-600 bg-slate-900 p-3 sm:p-4">
-      <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-300">Traçado e setores</p>
-          <h3 className="mt-1 truncate text-base font-black text-white">{circuitName || 'Circuito'}</h3>
+    let cancelled = false;
+    setFacts(null);
+    getCircuitFacts(circuitId)
+      .then((next) => {
+        if (!cancelled) setFacts(next);
+      })
+      .catch(() => {
+        if (!cancelled) setFacts(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [circuitId]);
+
+  const summary = forecast?.summary || forecastNote || weather || 'Condições variáveis';
+  const place = [facts?.city, facts?.country].filter(Boolean).join(' · ');
+
+  if (variant === 'tile') {
+    const ready = Boolean(facts || forecast);
+    return (
+      <div className={`weekend-stage ${ready ? 'weekend-stage--ready' : ''}`}>
+        <div className="weekend-tile__sheet">
+          {path ? (
+            <svg viewBox="-6 -6 112 112" role="img" aria-label={circuitName || 'Traçado'}>
+              <path d={path} fill="none" stroke="#e10600" strokeWidth="5.5" strokeLinejoin="round" strokeLinecap="round" />
+              <path d={path} fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round" />
+            </svg>
+          ) : (
+            <p>{missing ? 'Traçado indisponível' : 'Carregando traçado...'}</p>
+          )}
         </div>
-        <span className="shrink-0 rounded-full border border-red-500/40 bg-red-950/50 px-2 py-1 text-[9px] font-black uppercase tracking-wider text-red-200">S1 · S2 · S3</span>
-      </div>
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-sky-400/25 bg-slate-950/70 px-3 py-2.5 text-white shadow-inner">
-        <div className="flex items-center gap-2">
-          <CloudSun className="size-5 text-amber-300" aria-hidden="true" />
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-sky-200">Previsão do tempo</p>
-            <p className="text-sm font-bold text-white">{summary}</p>
+        <div className="weekend-stage__info">
+          <p className="weekend-stage__kicker">{place || 'Circuito'}</p>
+          <h3 className="weekend-stage__title">{facts?.circuitName || circuitName || 'Circuito'}</h3>
+          <div className="weekend-stage__weather">
+            <span><Thermometer className="size-3.5" aria-hidden="true" /> {forecast ? `${forecast.temperature}°C` : '—'}</span>
+            <span><Droplets className="size-3.5" aria-hidden="true" /> {forecast ? `${forecast.humidity}%` : '—'}</span>
+            <span><Wind className="size-3.5" aria-hidden="true" /> {forecast ? `${forecast.windKmh} km/h` : '—'}</span>
+            <strong>{summary}</strong>
+          </div>
+          <div className="weekend-stage__stats">
+            <div>
+              <span>Comprimento</span>
+              <strong>{formatCircuitLength(facts?.lengthMeters ?? null)}</strong>
+            </div>
+            <div>
+              <span>Curvas</span>
+              <strong>{facts?.corners ?? '—'}</strong>
+            </div>
+            <div>
+              <span>Recorde</span>
+              <strong>{facts?.lapRecord || '—'}</strong>
+              {facts?.recordYear ? <small>{facts.recordYear}</small> : null}
+            </div>
           </div>
         </div>
-        <div className="flex items-center gap-3 text-[10px] font-semibold text-slate-300">
-          <span className="inline-flex items-center gap-1"><Thermometer className="size-3.5 text-orange-300" aria-hidden="true" /> {forecast ? `${forecast.temperature}°C` : '—°C'}</span>
-          <span className="inline-flex items-center gap-1"><Droplets className="size-3.5 text-sky-300" aria-hidden="true" /> {forecast ? `${forecast.humidity}%` : '—%'}</span>
-          <span className="hidden items-center gap-1 sm:inline-flex"><Wind className="size-3.5 text-slate-300" aria-hidden="true" /> {forecast ? `${forecast.windKmh} km/h` : '— km/h'}</span>
+      </div>
+    );
+  }
+
+  return (
+    <article className="prndl-circuit">
+      <div className="prndl-circuit__top">
+        <div>
+          <p className="prndl-circuit__kicker">{place || 'Circuito'}</p>
+          <h3 className="prndl-circuit__title">{facts?.circuitName || circuitName || 'Circuito'}</h3>
+        </div>
+        <span className="prndl-circuit__badge">Race</span>
+      </div>
+      <div className="prndl-circuit__weather">
+        <div>
+          <p className="prndl-circuit__weather-label">Previsão</p>
+          <p className="prndl-circuit__weather-value">{summary}</p>
+        </div>
+        <div className="prndl-circuit__metrics">
+          <span><Thermometer className="size-3.5" aria-hidden="true" /> {forecast ? `${forecast.temperature}°C` : '—'}</span>
+          <span><Droplets className="size-3.5" aria-hidden="true" /> {forecast ? `${forecast.humidity}%` : '—'}</span>
+          <span><Wind className="size-3.5" aria-hidden="true" /> {forecast ? `${forecast.windKmh} km/h` : '—'}</span>
+        </div>
+      </div>
+      <div className="prndl-circuit__stats">
+        <div className="prndl-circuit__stat">
+          <span>Comprimento</span>
+          <strong>{formatCircuitLength(facts?.lengthMeters ?? null)}</strong>
+        </div>
+        <div className="prndl-circuit__stat">
+          <span>Curvas</span>
+          <strong>{facts?.corners ?? '—'}</strong>
+        </div>
+        <div className="prndl-circuit__stat">
+          <span>Recorde</span>
+          <strong>{facts?.lapRecord || '—'}</strong>
+          {facts?.recordYear ? <small>{facts.recordYear}</small> : null}
         </div>
       </div>
       {path ? (
-        <>
-        <svg viewBox="-4 -4 108 108" className="mx-auto mt-3 h-24 w-full max-w-xs sm:h-28 lg:h-32" role="img" aria-label={circuitName}>
-          <path d={path} fill="none" stroke="#7f1d1d" strokeWidth="5" strokeLinejoin="round" strokeLinecap="round" />
+        <svg viewBox="-4 -4 108 108" className="prndl-circuit__map" role="img" aria-label={circuitName}>
+          <path d={path} fill="none" stroke="#e10600" strokeWidth="5" strokeLinejoin="round" strokeLinecap="round" />
           <path d={path} fill="none" stroke="#f8fafc" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round" />
         </svg>
-        <div className="mt-2 flex items-center justify-center gap-2 border-t border-slate-700/70 pt-3" aria-label="Setores da pista">
-          {['S1', 'S2', 'S3'].map((sector) => (
-            <span key={sector} className="rounded-md border border-red-500/40 bg-red-950/40 px-2.5 py-1 text-[10px] font-black tracking-widest text-red-200">{sector}</span>
-          ))}
-          <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">setores</span>
-        </div>
-        </>
       ) : (
-        <p className="mt-6 text-sm text-white">
+        <p className="prndl-circuit__note">
           {missing ? 'Traçado ainda não disponível para este circuito.' : 'Carregando traçado...'}
         </p>
       )}
-    </div>
+    </article>
   );
 }
